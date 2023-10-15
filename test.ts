@@ -1,7 +1,7 @@
 import Expectations from "./src/Expectations";
 
 const expect = Expectations.expect;
-const when = Expectations.when;
+/* const when = Expectations.when; */
 
 const data = {
 	username: 'test',
@@ -42,7 +42,7 @@ const expectations = [
 		const res = Expectations.validate(vectorExpectations, vector);
 		return Expectations.ifNotValid(res, `Vector ${index} is invalid.`);
 	}) */
-	/* when('vectors').isArray().and().not().isEmpty().expect(data, 'vectors').toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'), */
+	/* when('vectors').isArray().and().not().isEmpty().expect(data, 'vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'), */
 ];
 
 const res = Expectations.validate(expectations, data);
