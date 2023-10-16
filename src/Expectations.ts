@@ -26,12 +26,6 @@ export default class Expectations {
 	static when(key: string) {
 		return new ValidatorCondition(key);
 	}
-
-	static ifNotValid(res: ValidatorResult, message: string) {
-		if (!Expectations.isValid(res)) {
-			throw new Error(message);
-		}
-	}
 }
 
 export class ValidatorDescriptor {

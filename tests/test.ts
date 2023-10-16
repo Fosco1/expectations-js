@@ -1,8 +1,4 @@
-import Expectations from "./src/Expectations";
-import { Validatable } from "./src/Validatable";
-
-const expect = Expectations.expect;
-const when = Expectations.when;
+import { when, expect, validate } from '@fosco110/expectations-js';
 
 const data = {
 	username: 'test',
@@ -40,7 +36,7 @@ const vectorExpectations = [
 	expect('state').toBeString().ifNot('State must be a string.'),
 ];
 
-const expectations: Array<Validatable> = [
+const expectations = [
 	expect('username').toMatch(/^[a-z0-9_-]{3,16}$/).ifNot('%key.capitalize% must be between 3 and 16 characters long.'),
 	expect('password').toMatch(/^[a-z0-9_-]{6,18}$/).ifNot('%key.capitalize% must be between 6 and 18 characters long.'),
 	expect('telephone').toMatch(/^1[0-9]{10}$/).ifNot('Please enter a valid phone number.'),
@@ -53,6 +49,6 @@ const expectations: Array<Validatable> = [
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.').debug(),
 ];
 
-const res = Expectations.validate(expectations, data);
+const res = validate(expectations, data);
 
 console.log(res);

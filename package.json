@@ -1,8 +1,12 @@
 {
+  "name": "@fosco110/expectations-js",
+  "version": "0.0.1",
+  "main": "./src/index.js",
+  "license": "LGPL-3.0-or-later",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "test": "node dist/test.js"
+    "test": "node lib/tests/test.js"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
