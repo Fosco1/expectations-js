@@ -8,6 +8,7 @@ export default class ValidatorExpectation implements Validatable {
 	reverse: Boolean = false
 	arrayMode: Boolean = false
 	debugMode: Boolean = false
+	required: Boolean = true
 
 	constructor(key: string) {
 		this.key = key;
@@ -28,6 +29,17 @@ export default class ValidatorExpectation implements Validatable {
 
 	validate(data: any, res: ValidatorResult) {
 		this.validatorFunctions.map((expectation) => {
+			if(!this.required) {
+				this.logIfDebug("not required, checking if data is undefined or null")
+				if ((data[this.key] === undefined || data[this.key] === null)) {
+					this.logIfDebug("data is undefined or null, skipping")
+					return;
+				} else {
+					this.logIfDebug("data is not undefined or null, continuing")
+				}
+			} else {
+				this.logIfDebug("required, continuing")
+			}
 			if(!this.arrayMode) {
 				this.logIfDebug("running expectation with", data[this.key], "as", this.key)
 				let lastRes = expectation(data[this.key]);
@@ -166,6 +178,12 @@ export default class ValidatorExpectation implements Validatable {
 
 	toCustom(fn: ValidatorFunction): ValidatorExpectation {
 		this.validatorFunctions.push(fn);
+		return this;
+	}
+
+	notRequired(): ValidatorExpectation {
+		this.logIfDebug("Not required called, setting required to false")
+		this.required = false;
 		return this;
 	}
 

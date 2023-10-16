@@ -30,7 +30,8 @@ const data = {
 	],
 	customField: [
 		1, 2, 3, 4, 5
-	]
+	],
+	maybe: 2
 };
 
 const vectorExpectations = [
@@ -47,8 +48,9 @@ const expectations: Array<Validatable> = [
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.').debug(),
-	expect('customField').toHaveLengthBetween(10, 15)
+	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
+	expect('customField').toHaveLengthBetween(10, 15),
+	expect('maybe')/* .debug() */.notRequired().toBeString().ifNot('Maybe must be a string.'),
 ];
 
 const res = Expectations.validate(expectations, data);

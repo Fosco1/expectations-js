@@ -121,6 +121,11 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
+	notRequired(): ValidatorCondition {
+		this.lastExpectation.notRequired();
+		return this;
+	}
+
 	each(): ValidatorCondition {
 		this.lastExpectation.each();
 		return this;
