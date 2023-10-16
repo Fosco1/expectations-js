@@ -1,4 +1,4 @@
-import { when, expect, validate } from '@fosco110/expectations-js';
+import { when, expect, validate } from '../src/index';
 
 const data = {
 	username: 'test',
