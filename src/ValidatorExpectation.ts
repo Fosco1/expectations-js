@@ -135,6 +135,11 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
+	toCustom(fn: ValidatorFunction): ValidatorExpectation {
+		this.validatorFunctions.push(fn);
+		return this;
+	}
+
 	each(): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not an array") => {
 			if (!Array.isArray(data) && !this.reverse) {

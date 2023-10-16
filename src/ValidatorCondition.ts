@@ -1,4 +1,4 @@
-import Expectations from "./Expectations";
+import Expectations, { ValidatorFunction } from "./Expectations";
 import { Validatable } from "./Validatable";
 import ValidatorExpectation from "./ValidatorExpectation";
 import { ValidatorResult } from "./ValidatorResult";
@@ -98,6 +98,11 @@ export default class ValidatorCondition implements Validatable {
 
 	hasProperty(property: string): ValidatorCondition {
 		this.lastExpectation.toHaveProperty(property);
+		return this;
+	}
+
+	isCustom(fn: ValidatorFunction): ValidatorCondition {
+		this.lastExpectation.toCustom(fn);
 		return this;
 	}
 
