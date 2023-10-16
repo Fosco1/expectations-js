@@ -1,12 +1,12 @@
-import { when, expect, validate } from '../src/index';
+import { when, expect, validate, isValid } from '../index';
 
 const data = {
 	username: 'test',
-	password: 'test',
+	password: 'tezfsdfst',
 	telephone: '12345678900',
-	acceptTerms: false,
-	email: '',
-	age: 17,
+	acceptTerms: true,
+	email: 'mail@test.com',
+	age: 19,
 	hasVectors: true,
 	vectors: [
 		{
@@ -16,7 +16,8 @@ const data = {
 		},
 		{
 			address: 'test',
-			city: 'test'
+			city: 'test',
+			state: 'test'
 		},
 		{
 			address: 'test',
@@ -27,7 +28,7 @@ const data = {
 	customField: [
 		1, 2, 3, 4, 5
 	],
-	maybe: 2
+	maybe: "2"
 };
 
 const vectorExpectations = [
@@ -44,11 +45,15 @@ const expectations = [
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
-	expect('customField').toHaveLengthBetween(10, 15),
-	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.').debug(),
+	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
+	expect('customField').toHaveLengthBetween(5, 15),
+	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
+	expect('address').notRequired().toBeObject(),
 ];
 
 const res = validate(expectations, data);
-
 console.log(res);
+
+const valid = isValid(res);
+
+console.log(valid);
