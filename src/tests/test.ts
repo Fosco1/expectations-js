@@ -48,7 +48,7 @@ const expectations = [
 	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
-	expect('address').notRequired().toBeObject(),
+	expect('address').notRequired().toBeObject().and.toCustom((data) => {return}),
 ];
 
 const res = validate(expectations, data);

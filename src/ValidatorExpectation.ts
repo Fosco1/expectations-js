@@ -20,6 +20,21 @@ export default class ValidatorExpectation implements Validatable {
 		}
 	}
 
+	private capitalize(str: string): string {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
+	get not(): ValidatorExpectation {
+		this.validatorDescriptors.push(new ValidatorDescriptor('not', (data: any, message: string = "") => {
+			this.reverse = !this.reverse;
+		}));
+		return this;
+	}
+
+	get and(): ValidatorExpectation {
+		return this;
+	}
+
 	debug(): ValidatorExpectation {
 		console.log("--- debug mode started", this.validatorDescriptors);
 		this.debugMode = true;
@@ -59,10 +74,6 @@ export default class ValidatorExpectation implements Validatable {
 				});
 			}
 		});
-	}
-
-	private capitalize(str: string): string {
-		return str.charAt(0).toUpperCase() + str.slice(1);
 	}
 
 	processMessage(message: string): string {
@@ -224,17 +235,6 @@ export default class ValidatorExpectation implements Validatable {
 			return lastDescriptorFunctionClone(data, errorMessage);
 		};
 		
-		return this;
-	}
-
-	not(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('not', (data: any, message: string = "") => {
-			this.reverse = !this.reverse;
-		}));
-		return this;
-	}
-
-	and(): ValidatorExpectation {
 		return this;
 	}
 }
