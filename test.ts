@@ -1,7 +1,8 @@
 import Expectations from "./src/Expectations";
+import { Validatable } from "./src/Validatable";
 
 const expect = Expectations.expect;
-/* const when = Expectations.when; */
+const when = Expectations.when;
 
 const data = {
 	username: 'test',
@@ -13,8 +14,7 @@ const data = {
 	vectors: [
 		{
 			address: 'test',
-			city: 'test',
-			state: 'test'
+			city: 'test'
 		},
 		{
 			address: 'test',
@@ -30,7 +30,7 @@ const vectorExpectations = [
 	expect('state').toBeString().ifNot('State must be a string.'),
 ];
 
-const expectations = [
+const expectations: Array<Validatable> = [
 	expect('username').toMatch(/^[a-z0-9_-]{3,16}$/).ifNot('Username must be between 3 and 16 characters long.'),
 	expect('password').toMatch(/^[a-z0-9_-]{6,18}$/).ifNot('Password must be between 6 and 18 characters long.'),
 	expect('telephone').toMatch(/^1[0-9]{10}$/).ifNot('Please enter a valid phone number.'),
@@ -42,7 +42,7 @@ const expectations = [
 		const res = Expectations.validate(vectorExpectations, vector);
 		return Expectations.ifNotValid(res, `Vector ${index} is invalid.`);
 	}) */
-	/* when('vectors').isArray().and().not().isEmpty().expect(data, 'vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'), */
+	/* when('vectors').isArray().not().isEmpty(). */expect('vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.')/* .debug() */,
 ];
 
 const res = Expectations.validate(expectations, data);

@@ -1,8 +1,10 @@
+import { Validatable } from "./Validatable";
+import ValidatorCondition from "./ValidatorCondition";
 import ValidatorExpectation from "./ValidatorExpectation";
 import { ValidatorResult } from "./ValidatorResult";
 
 export default class Expectations {
-	static validate(expectations: Array<ValidatorExpectation> | ValidatorExpectation, data: any) {
+	static validate(expectations: Array<Validatable> | Validatable, data: any) {
 		const res = {} as ValidatorResult;
 		if(!Array.isArray(expectations)) {
 			expectations = [expectations];
@@ -21,9 +23,9 @@ export default class Expectations {
 		return new ValidatorExpectation(key);
 	}
 
-	/* static when(key: string) {
-		return new ValidatorExpectation(key);
-	} */
+	static when(key: string) {
+		return new ValidatorCondition(key);
+	}
 
 	static ifNotValid(res: ValidatorResult, message: string) {
 		if (!Expectations.isValid(res)) {
@@ -32,4 +34,4 @@ export default class Expectations {
 	}
 }
 
-export type ExpectationFunction = (data: any, res: ValidatorResult, message?: string) => void;
+export type ValidatorFunction = (data: any, message?: string) => string | undefined | void;

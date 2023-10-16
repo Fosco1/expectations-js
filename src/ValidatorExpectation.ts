@@ -1,155 +1,161 @@
-import Expectations, { ExpectationFunction } from "./Expectations";
+import { ValidatorFunction } from "./Expectations";
+import { Validatable } from "./Validatable";
 import { ValidatorResult } from "./ValidatorResult";
 
-export default class ValidatorExpectation {
+export default class ValidatorExpectation implements Validatable {
 	key: string;
-	expectations: Array<ExpectationFunction>
+	validatorFunctions: Array<ValidatorFunction>
 	reverse: Boolean = false
+	arrayMode: Boolean = false
+	debugMode: Boolean = false
 
 	constructor(key: string) {
 		this.key = key;
-		this.expectations = [];
+		this.validatorFunctions = [];
+	}
+
+	private logIfDebug(...args: any[]) {
+		if(this.debugMode) {
+			console.log(...args);
+		}
+	}
+
+	debug(): ValidatorExpectation {
+		console.log(this.validatorFunctions);
+		this.debugMode = true;
+		return this;
 	}
 
 	validate(data: any, res: ValidatorResult) {
-		this.expectations.map((expectation) => {
-			expectation(data, res);
+		this.validatorFunctions.map((expectation) => {
+			if(!this.arrayMode) {
+				this.logIfDebug("running expectation with", data[this.key], "as", this.key)
+				let lastRes = expectation(data[this.key]);
+				if(lastRes) {
+					res[this.key] = lastRes;
+				}
+			} else {
+				this.logIfDebug("array mode is on, validating array", data[this.key])
+				res[this.key] = [];
+				data[this.key].forEach((item: any, index: number) => {
+					this.logIfDebug("validating item", item)
+					let lastRes = expectation(item, res[this.key][index]);
+					if(lastRes) {
+						res[this.key][index] = lastRes;
+					}
+				});
+			}
 		});
 	}
 
 	toBeString(): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Is not a string") => {
-			if (typeof data[this.key] !== "string" && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Is not a string") => {
+			if (typeof data !== "string" && !this.reverse) {
+				return message;
 			}
 		});
-		return this;
-	}
-
-	isString(): ValidatorExpectation {
-		this.toBeString();
 		return this;
 	}
 
 	toMatch(regex: RegExp): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Doesn't match the regular expression") => {
-			if (!regex.test(data[this.key]) && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Doesn't match the regular expression") => {
+			if (!regex.test(data) && !this.reverse) {
+				return message;
 			}
 		});
 		return this;
 	}
 
-	matches(regex: RegExp): ValidatorExpectation {
-		this.toMatch(regex);
-		return this;
-	}
-
 	toBe(value: any): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Doesn't match the provided value") => {
-			if (data[this.key] !== value && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Doesn't match the provided value") => {
+			if (data !== value && !this.reverse) {
+				return message;
 			}
 		});
 		return this;
 	}
 
 	toBeGreaterThan(value: number): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Is not greater than the provided value") => {
-			if (data[this.key] <= value && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Is not greater than the provided value") => {
+			if (data <= value && !this.reverse) {
+				return message;
 			}
 		});
-		return this;
-	}
-
-	isGreaterThan(value: number): ValidatorExpectation {
-		this.toBeGreaterThan(value);
 		return this;
 	}
 
 	toBeLessThan(value: number): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Is not less than the provided value") => {
-			if (data[this.key] >= value && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Is not less than the provided value") => {
+			if (data >= value && !this.reverse) {
+				return message;
 			}
 		});
-		return this;
-	}
-
-	isLessThan(value: number): ValidatorExpectation {
-		this.toBeLessThan(value);
 		return this;
 	}
 
 	toBeArray(): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Is not an array") => {
-			if (!Array.isArray(data[this.key]) && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Is not an array") => {
+			if (!Array.isArray(data) && !this.reverse) {
+				return message;
 			}
 		});
-		return this;
-	}
-
-	isArray(): ValidatorExpectation {
-		this.toBeArray();
 		return this;
 	}
 	
 	toBeEmpty(): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Is not empty") => {
-			if (data[this.key].length > 0 && !this.reverse) {
-				res[this.key] = message;
+		this.validatorFunctions.push((data: any, message: string = "Is not empty") => {
+			if (data.length > 0 && !this.reverse) {
+				return message;
 			}
 		});
-		return this;
-	}
-
-	isEmpty(): ValidatorExpectation {
-		this.toBeEmpty();
 		return this;
 	}
 
 	toHaveProperties(properties: Array<string>): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Does not have the required properties") => {
+		this.validatorFunctions.push((data: any, message: string = "Does not have the required properties.") => {
+			let missingProperties: Array<string> = [];
 			properties.forEach((property) => {
-				if (!data[this.key].hasOwnProperty(property) && !this.reverse) {
-					res[this.key] = message;
+				if (!data.hasOwnProperty(property) && !this.reverse) {
+					missingProperties.push(property);
 				}
 			});
-		});
-		return this;
-	}
-
-	hasProperties(properties: Array<string>): ValidatorExpectation {
-		this.toHaveProperties(properties);
-		return this;
-	}
-
-	toHaveProperty(property: string): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "Does not have the required property") => {
-			if (!data[this.key].hasOwnProperty(property) && !this.reverse) {
-				res[this.key] = message;
+			if (missingProperties.length > 0) {
+				return message + " Missing properties: " + missingProperties.join(", ");
 			}
 		});
 		return this;
 	}
 
-	hasProperty(property: string): ValidatorExpectation {
-		this.toHaveProperty(property);
+	toHaveProperty(property: string): ValidatorExpectation {
+		this.validatorFunctions.push((data: any, message: string = "Does not have the required property") => {
+			if (!data.hasOwnProperty(property) && !this.reverse) {
+				return message;
+			}
+		});
+		return this;
+	}
+
+	each(): ValidatorExpectation {
+		this.validatorFunctions.push((data: any, message: string = "Is not an array") => {
+			if (!Array.isArray(data) && !this.reverse) {
+				return message;
+			}
+			this.logIfDebug("each called, setting array mode to true")
+			this.arrayMode = true;
+		});
 		return this;
 	}
 
 	ifNot(errorMessage: string): ValidatorExpectation {
-		const lastExpectation = this.expectations[this.expectations.length - 1];
-		this.expectations[this.expectations.length - 1] = (data: any, res: ValidatorResult) => {
-			lastExpectation(data, res, errorMessage);
+		const lastExpectation = this.validatorFunctions[this.validatorFunctions.length - 1];
+		this.validatorFunctions[this.validatorFunctions.length - 1] = (data: any) => {
+			return lastExpectation(data, errorMessage);
 		};
 		return this;
 	}
 
 	not(): ValidatorExpectation {
-		this.expectations.push((data: any, res: ValidatorResult, message: string = "") => {
+		this.validatorFunctions.push((data: any, message: string = "") => {
 			this.reverse = !this.reverse;
 		});
 		return this;
