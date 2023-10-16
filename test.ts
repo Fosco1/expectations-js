@@ -50,7 +50,7 @@ const expectations: Array<Validatable> = [
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
 	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(10, 15),
-	expect('maybe')/* .debug() */.notRequired().toBeString().ifNot('%key.capitalize% must be a string.'),
+	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.').debug(),
 ];
 
 const res = Expectations.validate(expectations, data);

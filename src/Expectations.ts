@@ -34,4 +34,13 @@ export default class Expectations {
 	}
 }
 
+export class ValidatorDescriptor {
+	name: string
+	function: ValidatorFunction
+
+	constructor(name: string, func: ValidatorFunction) {
+		this.name = name;
+		this.function = func;
+	}
+}
 export type ValidatorFunction = (data: any, message?: string) => string | undefined | void;
