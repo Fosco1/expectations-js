@@ -15,6 +15,11 @@ const data = {
 	vectors: [
 		{
 			address: 'test',
+			city: 'test',
+			state: 'test'
+		},
+		{
+			address: 'test',
 			city: 'test'
 		},
 		{

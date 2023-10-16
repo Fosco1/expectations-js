@@ -42,6 +42,8 @@ export default class ValidatorExpectation implements Validatable {
 					let lastRes = expectation(item, res[this.key][index]);
 					if(lastRes) {
 						res[this.key][index] = lastRes;
+					} else {
+						res[this.key][index] = {};
 					}
 				});
 			}
