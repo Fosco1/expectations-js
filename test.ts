@@ -43,11 +43,7 @@ const expectations: Array<Validatable> = [
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
 	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.').debug(),
-	expect('customField').toCustom((data) => {
-		if (data.length < 5) {
-			return 'Custom field must have at least 5 elements.';
-		}
-	})
+	expect('customField').toHaveLengthBetween(10, 15)
 ];
 
 const res = Expectations.validate(expectations, data);

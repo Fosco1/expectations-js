@@ -135,6 +135,33 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
+	toHaveMinimumLength(length: number): ValidatorExpectation {
+		this.validatorFunctions.push((data: any, message: string = `Is too short (minimum: ${length})`) => {
+			if (data.length < length && !this.reverse) {
+				return message;
+			}
+		});
+		return this;
+	}
+
+	toHaveMaximumLength(length: number): ValidatorExpectation {
+		this.validatorFunctions.push((data: any, message: string = `Is too long (maximum: ${length})`) => {
+			if (data.length > length && !this.reverse) {
+				return message;
+			}
+		});
+		return this;
+	}
+
+	toHaveLengthBetween(minimum: number, maximum: number): ValidatorExpectation {
+		this.validatorFunctions.push((data: any, message: string = `Does not meet the required length (minimum: ${minimum}, maximum: ${maximum})`) => {
+			if (data.length < minimum || data.length > maximum && !this.reverse) {
+				return message;
+			}
+		});
+		return this;
+	}
+
 	toCustom(fn: ValidatorFunction): ValidatorExpectation {
 		this.validatorFunctions.push(fn);
 		return this;

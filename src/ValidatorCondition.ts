@@ -101,6 +101,21 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
+	hasMinimumLength(length: number): ValidatorCondition {
+		this.lastExpectation.toHaveMinimumLength(length);
+		return this;
+	}
+
+	hasMaximumLength(length: number): ValidatorCondition {
+		this.lastExpectation.toHaveMaximumLength(length);
+		return this;
+	}
+
+	hasLengthBetween(min: number, max: number): ValidatorCondition {
+		this.lastExpectation.toHaveLengthBetween(min, max);
+		return this;
+	}
+
 	isCustom(fn: ValidatorFunction): ValidatorCondition {
 		this.lastExpectation.toCustom(fn);
 		return this;
