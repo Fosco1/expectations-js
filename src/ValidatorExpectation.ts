@@ -4,7 +4,7 @@ import { ValidatorResult } from "./ValidatorResult";
 
 export default class ValidatorExpectation implements Validatable {
 	key: string;
-	validatorDescriptors: Array<ValidatorDescriptor>
+	validatorDescriptors: Array<ValidatorDescriptor> = [];
 	reverse: Boolean = false
 	arrayMode: Boolean = false
 	debugMode: Boolean = false
@@ -12,7 +12,6 @@ export default class ValidatorExpectation implements Validatable {
 
 	constructor(key: string) {
 		this.key = key;
-		this.validatorDescriptors = [];
 	}
 
 	private logIfDebug(...args: any[]) {
@@ -22,7 +21,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	debug(): ValidatorExpectation {
-		console.log(this.validatorDescriptors);
+		console.log("--- debug mode started", this.validatorDescriptors);
 		this.debugMode = true;
 		return this;
 	}
@@ -189,6 +188,15 @@ export default class ValidatorExpectation implements Validatable {
 
 	toCustom(fn: ValidatorFunction): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toCustom', fn));
+		return this;
+	}
+
+	toBeObject(): ValidatorExpectation {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeObject', (data: any, message: string = "Is not an object") => {
+			if (typeof data !== "object" && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}));
 		return this;
 	}
 

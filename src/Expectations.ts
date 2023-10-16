@@ -15,8 +15,31 @@ export default class Expectations {
 		return res;
 	}
 
-	static isValid(res: ValidatorResult) {
-		return Object.keys(res).length === 0;
+	/**
+	 * Checks recursively if res has a property set which is a string.
+	 * If it has an array, checks each item with the same function.
+	 * If it has an object, checks it entirely with the same function.
+	 * @param res
+	 */
+	static isValid(res: ValidatorResult): boolean {
+		for(let key in res) {
+			if(typeof res[key] === "string") {
+				return false;
+			}
+			if(Array.isArray(res[key])) {
+				for(let i = 0; i < res[key].length; i++) {
+					if(!this.isValid(res[key][i])) {
+						return false;
+					}
+				}
+			}
+			if(typeof res[key] === "object") {
+				if(!this.isValid(res[key])) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	static expect(key: string) {

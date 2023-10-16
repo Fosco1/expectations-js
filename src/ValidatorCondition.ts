@@ -36,16 +36,15 @@ export default class ValidatorCondition implements Validatable {
 
 		const firstExpRes = Expectations.validate(this.expectations[0], data);
 		if(Expectations.isValid(firstExpRes)) {
-			this.logIfDebug("First is valid")
+			this.logIfDebug("First is valid", firstExpRes)
 			const secondExpRes = Expectations.validate(this.expectations[1], data);
+			res[this.expectations[1].key] = secondExpRes[this.expectations[1].key];
 			if(Expectations.isValid(secondExpRes)) {
-				this.logIfDebug("Second is valid")
+				this.logIfDebug("Second is valid", secondExpRes)
 				// If both are valid, we're done
 				return;
 			} else {
-				res[this.expectations[1].key] = secondExpRes[this.expectations[1].key];
 				this.logIfDebug("Second is NOT valid", secondExpRes)
-				
 			}
 		} else {
 			this.logIfDebug("First is NOT valid, but that's okay")
@@ -118,6 +117,11 @@ export default class ValidatorCondition implements Validatable {
 
 	isCustom(fn: ValidatorFunction): ValidatorCondition {
 		this.lastExpectation.toCustom(fn);
+		return this;
+	}
+
+	isObject(): ValidatorCondition {
+		this.lastExpectation.toBeObject();
 		return this;
 	}
 
