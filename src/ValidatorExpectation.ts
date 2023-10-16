@@ -1,3 +1,4 @@
+import { isValid } from ".";
 import { ValidatorDescriptor, ValidatorFunction } from "./Expectations";
 import { Validatable } from "./Validatable";
 import { ValidatorResult } from "./ValidatorResult";
@@ -5,6 +6,7 @@ import { ValidatorResult } from "./ValidatorResult";
 export default class ValidatorExpectation implements Validatable {
 	key: string;
 	validatorDescriptors: Array<ValidatorDescriptor> = [];
+	subExpectations: Array<Validatable> = [];
 	reverse: Boolean = false
 	arrayMode: Boolean = false
 	debugMode: Boolean = false
@@ -63,17 +65,41 @@ export default class ValidatorExpectation implements Validatable {
 			} else {
 				this.logIfDebug("array mode is on, validating array", data[this.key])
 				res[this.key] = [];
-				data[this.key].forEach((item: any, index: number) => {
+				data[this.key].forEach((item: any, dataArrayIndex: number) => {
 					this.logIfDebug("validating item", item)
-					let lastRes = descriptor.function(item, res[this.key][index]);
+					let lastRes = descriptor.function(item, res[this.key][dataArrayIndex]);
 					if(lastRes) {
-						res[this.key][index] = lastRes;
+						res[this.key][dataArrayIndex] = lastRes;
 					} else {
-						res[this.key][index] = {};
+						res[this.key][dataArrayIndex] = {};
 					}
+					this.subExpectations.forEach((expectation) => {
+						expectation.validate(item, res[this.key][dataArrayIndex]);
+					});
 				});
 			}
 		});
+		if(!this.arrayMode) {
+			this.logIfDebug("running subexpectations with", data[this.key], "as", this.key)
+			this.subExpectations.forEach((expectation) => {
+				if(!res[this.key]) {
+					res[this.key] = {};
+				}
+				expectation.validate(data[this.key], res[this.key]);
+			});
+		} else {
+			this.logIfDebug("[SUBEXP] array mode is on, validating array", data[this.key])
+			res[this.key] = [];
+			data[this.key].forEach((item: any, dataArrayIndex: number) => {
+				this.subExpectations.forEach((expectation) => {
+					if(!res[this.key][dataArrayIndex]) {
+						res[this.key][dataArrayIndex] = {};
+					}
+					expectation.validate(item, res[this.key][dataArrayIndex]);
+				});
+				this.logIfDebug("validating item", item, isValid(res[this.key][dataArrayIndex]) ? 'was' : 'was NOT', 'successful')
+			});
+		}
 	}
 
 	processMessage(message: string): string {
@@ -211,6 +237,8 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
+	// Control functions
+
 	notRequired(): ValidatorExpectation {
 		this.logIfDebug("Not required called, setting required to false")
 		this.required = false;
@@ -235,6 +263,18 @@ export default class ValidatorExpectation implements Validatable {
 			return lastDescriptorFunctionClone(data, errorMessage);
 		};
 		
+		return this;
+	}
+
+	explain() {
+		this.logIfDebug("validation process:", this.validatorDescriptors.map((descriptor) => {
+			return descriptor.name;
+		}).join(", "));
+		return this;
+	}
+
+	subExpect(expectations: Array<Validatable>) {
+		this.subExpectations = expectations;
 		return this;
 	}
 }

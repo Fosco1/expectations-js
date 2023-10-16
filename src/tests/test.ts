@@ -17,10 +17,10 @@ const data = {
 		{
 			address: 'test',
 			city: 'test',
-			state: 'test'
+			state: 2
 		},
 		{
-			address: 'test',
+			address: 2434,
 			city: 'test',
 			state: 'test'
 		}
@@ -28,7 +28,7 @@ const data = {
 	customField: [
 		1, 2, 3, 4, 5
 	],
-	maybe: "2"
+	maybe: "2",
 };
 
 const vectorExpectations = [
@@ -49,6 +49,11 @@ const expectations = [
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
 	expect('address').notRequired().toBeObject().and.toCustom((data) => {return}),
+	expect('vectors').each().subExpect([
+		expect('address').toBeString().ifNot('Address must be a string.'),
+		expect('city').toBeString().ifNot('City must be a string.'),
+		expect('state').toBeString().ifNot('State must be a string.')
+	]).debug().explain()
 ];
 
 const res = validate(expectations, data);
