@@ -45,7 +45,7 @@ const expectations = [
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
+	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
 	expect('address').notRequired().toBeObject().and.toCustom((data) => {return}),

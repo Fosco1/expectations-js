@@ -17,9 +17,9 @@ export default class ValidatorCondition implements Validatable {
 		}
 	}
 
-	expect(key: string) {
+	expect(key: string): ValidatorExpectation {
 		this.expectations.push(new ValidatorExpectation(key));
-		return this;
+		return this.lastExpectation;
 	}
 
 	debug(): ValidatorCondition {
