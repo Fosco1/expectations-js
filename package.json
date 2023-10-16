@@ -2,7 +2,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "start": "node dist/test.js"
+    "test": "node dist/test.js"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
