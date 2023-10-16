@@ -141,7 +141,7 @@ export default class ValidatorCondition implements Validatable {
 	}
 
 	not(): ValidatorCondition {
-		this.lastExpectation.not();
+		this.lastExpectation.not;
 		return this;
 	}
 
