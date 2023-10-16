@@ -69,6 +69,11 @@ You can also chain the `ifNot` method to set a custom error message.
 ```typescript
 expect('age').toBeLessThan(18).ifNot('You must be 18 or older')
 ```
+If you put a `%key%` in the error message, it will be replaced with the value of the key.
+If you need it capitalized, just use `%key.capitalize%`.
+```typescript
+expect('age').toBeLessThan(18).ifNot('%key.capitalize% must be 18 or older') // Age must be 18 or older
+```
 
 ## Interpreting return values
 The `validate` function returns an object, whose keys are set when a validation fails.
@@ -105,3 +110,14 @@ This means that the validation failed for the fields `name` and `agreeToTerms`.
 > ```typescript
 > expect('age').not().toBeLessThan(18).ifNot("You must be 18 or older to use this service")
 > ```
+
+## Debugging
+If you need to debug your expectations, you can chain the `debug` method to any expectation.
+```typescript
+expect('name').debug().toMatch(/^[a-zA-Z]+$/)
+```
+> You can chain this anywhere, on the `when` function too.
+> ```typescript
+> when('age').debug().isLessThan(18).expect('name').not().toEqual('John')
+> ```
+
