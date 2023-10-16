@@ -62,10 +62,21 @@ export default class ValidatorExpectation implements Validatable {
 		});
 	}
 
+	private capitalize(str: string): string {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
+	processMessage(message: string): string {
+		message = message.replace(/%key%/g, this.key);
+		message = message.replace(/%key.capitalize%/g, this.capitalize(this.key));
+
+		return message;
+	}
+
 	toBeString(): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not a string") => {
 			if (typeof data !== "string" && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -74,7 +85,7 @@ export default class ValidatorExpectation implements Validatable {
 	toMatch(regex: RegExp): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Doesn't match the regular expression") => {
 			if (!regex.test(data) && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -83,7 +94,7 @@ export default class ValidatorExpectation implements Validatable {
 	toBe(value: any): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Doesn't match the provided value") => {
 			if (data !== value && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -92,7 +103,7 @@ export default class ValidatorExpectation implements Validatable {
 	toBeGreaterThan(value: number): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not greater than the provided value") => {
 			if (data <= value && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -101,7 +112,7 @@ export default class ValidatorExpectation implements Validatable {
 	toBeLessThan(value: number): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not less than the provided value") => {
 			if (data >= value && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -110,7 +121,7 @@ export default class ValidatorExpectation implements Validatable {
 	toBeArray(): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not an array") => {
 			if (!Array.isArray(data) && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -119,7 +130,7 @@ export default class ValidatorExpectation implements Validatable {
 	toBeEmpty(): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not empty") => {
 			if (data.length > 0 && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -134,7 +145,7 @@ export default class ValidatorExpectation implements Validatable {
 				}
 			});
 			if (missingProperties.length > 0) {
-				return message + " Missing properties: " + missingProperties.join(", ");
+				return this.processMessage(message) + " Missing properties: " + missingProperties.join(", ");
 			}
 		});
 		return this;
@@ -143,7 +154,7 @@ export default class ValidatorExpectation implements Validatable {
 	toHaveProperty(property: string): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Does not have the required property") => {
 			if (!data.hasOwnProperty(property) && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -152,7 +163,7 @@ export default class ValidatorExpectation implements Validatable {
 	toHaveMinimumLength(length: number): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = `Is too short (minimum: ${length})`) => {
 			if (data.length < length && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -161,7 +172,7 @@ export default class ValidatorExpectation implements Validatable {
 	toHaveMaximumLength(length: number): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = `Is too long (maximum: ${length})`) => {
 			if (data.length > length && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -170,7 +181,7 @@ export default class ValidatorExpectation implements Validatable {
 	toHaveLengthBetween(minimum: number, maximum: number): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = `Does not meet the required length (minimum: ${minimum}, maximum: ${maximum})`) => {
 			if (data.length < minimum || data.length > maximum && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 		});
 		return this;
@@ -190,7 +201,7 @@ export default class ValidatorExpectation implements Validatable {
 	each(): ValidatorExpectation {
 		this.validatorFunctions.push((data: any, message: string = "Is not an array") => {
 			if (!Array.isArray(data) && !this.reverse) {
-				return message;
+				return this.processMessage(message);
 			}
 			this.logIfDebug("each called, setting array mode to true")
 			this.arrayMode = true;
