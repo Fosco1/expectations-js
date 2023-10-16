@@ -18,7 +18,7 @@ export default class ValidatorExpectation implements Validatable {
 
 	private logIfDebug(...args: any[]) {
 		if(this.debugMode) {
-			console.log(...args);
+			console.log("[" + this.key + "]", ...args);
 		}
 	}
 
@@ -38,35 +38,35 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	debug(): ValidatorExpectation {
-		console.log("--- debug mode started", this.validatorDescriptors);
 		this.debugMode = true;
+		this.logIfDebug("--- debug mode started", this.validatorDescriptors);
 		return this;
 	}
 
 	validate(data: any, res: ValidatorResult) {
 		this.validatorDescriptors.map((descriptor) => {
 			if(!this.required) {
-				this.logIfDebug("not required, checking if data is undefined or null")
+				this.logIfDebug("field not required, checking if data is undefined or null")
 				if ((data[this.key] === undefined || data[this.key] === null)) {
 					this.logIfDebug("data is undefined or null, skipping")
 					return;
-				} else {
-					this.logIfDebug("data is not undefined or null, continuing")
 				}
-			} else {
-				this.logIfDebug("required, continuing")
 			}
 			if(!this.arrayMode) {
-				this.logIfDebug("running expectation with", data[this.key], "as", this.key)
+				this.logIfDebug(`running expectation ${descriptor.name} with`, data[this.key], `as ${this.key}`)
 				let lastRes = descriptor.function(data[this.key]);
 				if(lastRes) {
 					res[this.key] = lastRes;
 				}
 			} else {
-				this.logIfDebug("array mode is on, validating array", data[this.key])
+				this.logIfDebug("[ARRAY] array mode is on, validating each of:", data[this.key])
+				if(!Array.isArray(data[this.key])) {
+					this.logIfDebug("[ARRAY] data is not an array, skipping")
+					return;
+				}
 				res[this.key] = [];
 				data[this.key].forEach((item: any, dataArrayIndex: number) => {
-					this.logIfDebug("validating item", item)
+					this.logIfDebug(`[ARRAY] running expectation ${descriptor.name} with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 					let lastRes = descriptor.function(item, res[this.key][dataArrayIndex]);
 					if(lastRes) {
 						res[this.key][dataArrayIndex] = lastRes;
@@ -80,24 +80,29 @@ export default class ValidatorExpectation implements Validatable {
 			}
 		});
 		if(!this.arrayMode) {
-			this.logIfDebug("running subexpectations with", data[this.key], "as", this.key)
+			this.logIfDebug("[SUBEXP] running subexpectations with", data[this.key], `as ${this.key}`)
 			this.subExpectations.forEach((expectation) => {
 				if(!res[this.key]) {
 					res[this.key] = {};
 				}
 				expectation.validate(data[this.key], res[this.key]);
+				this.logIfDebug("[SUBEXP] validating item", data[this.key], isValid(res[this.key]) ? 'was' : 'was NOT', 'successful')
 			});
 		} else {
-			this.logIfDebug("[SUBEXP] array mode is on, validating array", data[this.key])
+			this.logIfDebug("[SUBEXP] [ARRAY] array mode is on, validating array", data[this.key])
+			if(!Array.isArray(data[this.key])) {
+				this.logIfDebug("[SUBEXP] [ARRAY] data is not an array, skipping")
+				return;
+			}
 			res[this.key] = [];
 			data[this.key].forEach((item: any, dataArrayIndex: number) => {
+				this.logIfDebug(`[SUBEXP] [ARRAY] running subexp check with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 				this.subExpectations.forEach((expectation) => {
 					if(!res[this.key][dataArrayIndex]) {
 						res[this.key][dataArrayIndex] = {};
 					}
 					expectation.validate(item, res[this.key][dataArrayIndex]);
 				});
-				this.logIfDebug("validating item", item, isValid(res[this.key][dataArrayIndex]) ? 'was' : 'was NOT', 'successful')
 			});
 		}
 	}
