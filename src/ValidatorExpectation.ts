@@ -16,7 +16,7 @@ export default class ValidatorExpectation implements Validatable {
 		this.key = key;
 	}
 
-	private logIfDebug(...args: any[]) {
+	logIfDebug(...args: any[]) {
 		if(this.debugMode) {
 			console.log("[" + this.key + "]", ...args);
 		}
@@ -39,7 +39,7 @@ export default class ValidatorExpectation implements Validatable {
 
 	debug(): ValidatorExpectation {
 		this.debugMode = true;
-		this.logIfDebug("--- debug mode started", this.validatorDescriptors);
+		this.logIfDebug("--- debug mode started");
 		return this;
 	}
 
@@ -114,18 +114,18 @@ export default class ValidatorExpectation implements Validatable {
 		return message;
 	}
 
-	toBeString(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeString', (data: any, message: string = "Is not a string") => {
-			if (typeof data !== "string" && !this.reverse) {
+	toMatch(regex: RegExp): ValidatorExpectation {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toMatch', (data: any, message: string = "Doesn't match the regular expression") => {
+			if (!regex.test(data) && !this.reverse) {
 				return this.processMessage(message);
 			}
 		}));
 		return this;
 	}
 
-	toMatch(regex: RegExp): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toMatch', (data: any, message: string = "Doesn't match the regular expression") => {
-			if (!regex.test(data) && !this.reverse) {
+	toBeString(): ValidatorExpectation {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeString', (data: any, message: string = "Is not a string") => {
+			if (typeof data !== "string" && !this.reverse) {
 				return this.processMessage(message);
 			}
 		}));
@@ -278,7 +278,7 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
-	subExpect(expectations: Array<Validatable>) {
+	toSatisfy(expectations: Array<Validatable>) {
 		this.subExpectations = expectations;
 		return this;
 	}

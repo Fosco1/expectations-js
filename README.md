@@ -25,7 +25,7 @@ You will then need to create an array, in which you can put your validation rule
 ```typescript
 const expectations = [
 	expect('name').toMatch(/^[a-zA-Z]+$/),
-	when('age').isLessThan(18).expect('name').not().toEqual('John'),
+	when('age').isLessThan(18).expect('name').not.toEqual('John'),
 ]
 ```
 
@@ -49,13 +49,13 @@ You can then chain methods to it, to create a validation rule.
 ```typescript
 expect('name').toMatch(/^[a-zA-Z]+$/)
 ```
-If you need to run an inverse check, just call the `not` method. 
+If you need to run an inverse check, just use `not`. 
 ```typescript
-expect('name').not().toMatch(/^[a-zA-Z]+$/)
+expect('name').not.toMatch(/^[a-zA-Z]+$/)
 ```
-An `and` method is also available. It is not necessary, but it can make the code more readable. 
+An `and` is also available. It is not necessary, but it can make the code more readable. 
 ```typescript
-expect('name').toMatch(/^[a-zA-Z]+$/).and().not().toEqual('John')
+expect('name').toMatch(/^[a-zA-Z]+$/).and.not.toEqual('John')
 ```
 If you need to perform a validation on multiple items (e.g. an array), you can use the `each` method. 
 ```typescript
@@ -63,7 +63,7 @@ expect('names').each().toMatch(/^[a-zA-Z]+$/)
 ```
 For more complex operations (e.g. two values dependent on eachother), use the `when` method.
 ```typescript
-when('age').isLessThan(18).expect('name').not().toEqual('John')
+when('age').isLessThan(18).expect('name').not.toEqual('John')
 ```
 You can also chain the `ifNot` method to set a custom error message.
 ```typescript
@@ -73,6 +73,29 @@ If you put a `%key%` in the error message, it will be replaced with the value of
 If you need it capitalized, just use `%key.capitalize%`.
 ```typescript
 expect('age').toBeLessThan(18).ifNot('%key.capitalize% must be 18 or older') // Age must be 18 or older
+```
+In case of more complex validation operations (e.g. an object, an object inside an array, an object inside another object), you can use SubExpectations.
+```typescript
+const data = {
+	user: {
+		name: 'John',
+		age: 17,
+	},
+};
+const expectations = [
+	expect('user').toSatisfy([
+		expect('name').toMatch(/^[a-zA-Z]+$/),
+		expect('age').toBeGreaterThan(18),
+	])
+];
+const res = validate(data, expectations);
+/**
+ * res = {
+ * 	user: {
+ * 		age: 'age must be greater than 18',
+ * 	},
+ * }
+ */
 ```
 
 ## Interpreting return values
@@ -88,7 +111,7 @@ const data = {
 }
 const expectations = [
 	expect('name').toMatch(/^[a-zA-Z]+$/),
-	when('age').isLessThan(18).expect('name').not().toEqual('John').ifNot("Sorry John, you're too young"),
+	when('age').isLessThan(18).expect('name').not.toEqual('John').ifNot("Sorry John, you're too young"),
 	expect('agreeToTerms').toBe(true).ifNot('You must agree to the terms'),
 ]
 const res = validate(data, expectations);
@@ -108,7 +131,7 @@ This means that the validation failed for the fields `name` and `agreeToTerms`.
 > ```
 > or
 > ```typescript
-> expect('age').not().toBeLessThan(18).ifNot("You must be 18 or older to use this service")
+> expect('age').not.toBeLessThan(18).ifNot("You must be 18 or older to use this service")
 > ```
 
 ## Debugging
@@ -118,6 +141,6 @@ expect('name').debug().toMatch(/^[a-zA-Z]+$/)
 ```
 > You can chain this anywhere, on the `when` function too.
 > ```typescript
-> when('age').debug().isLessThan(18).expect('name').not().toEqual('John')
+> when('age').debug().isLessThan(18).expect('name').not.toEqual('John')
 > ```
 

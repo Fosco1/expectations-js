@@ -17,18 +17,18 @@ const data = {
 		{
 			address: 'test',
 			city: 'test',
-			state: 2
+			state: ' 2'
 		},
 		{
-			address: 2434,
+			address: '2434',
 			city: 'test',
-			state: 'test'
+			state: 'asdasd'
 		}
 	],
 	customField: [
 		1, 2, 3, 4, 5
 	],
-	maybe: "2",
+	maybe: "3",
 };
 
 const vectorExpectations = [
@@ -45,15 +45,13 @@ const expectations = [
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
+	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
 	expect('address').notRequired().toBeObject().and.toCustom((data) => {return}),
-	expect('vectors').each().subExpect([
-		expect('address').toBeString().ifNot('Address must be a string.'),
-		expect('city').toBeString().ifNot('City must be a string.'),
-		expect('state').toBeString().ifNot('State must be a string.')
-	]).debug().explain()
+	when('vectors')/* .debug() */.each().satisfies(
+		vectorExpectations
+	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
 ];
 
 const res = validate(expectations, data);

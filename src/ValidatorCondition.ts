@@ -11,19 +11,34 @@ export default class ValidatorCondition implements Validatable {
 		this.expectations = [new ValidatorExpectation(key)];
 	}
 
-	private logIfDebug(...args: any[]) {
+	logIfDebug(...args: any[]) {
 		if(this.debugMode) {
-			console.log(...args);
+			console.log(`[CONDITION]`, ...args);
 		}
+		return this;
 	}
 
-	expect(key: string): ValidatorExpectation {
-		this.expectations.push(new ValidatorExpectation(key));
-		return this.lastExpectation;
+	get not(): ValidatorCondition {
+		this.lastExpectation.not;
+		return this;
+	}
+
+	get and(): ValidatorCondition {
+		return this;
+	}
+
+	get lastExpectation() {
+		return this.expectations[this.expectations.length - 1];
 	}
 
 	debug(): ValidatorCondition {
 		this.debugMode = true;
+		this.logIfDebug("--- debug mode started");
+		return this;
+	}
+
+	expect(key: string): ValidatorCondition {
+		this.expectations.push(new ValidatorExpectation(key));
 		return this;
 	}
 
@@ -49,10 +64,6 @@ export default class ValidatorCondition implements Validatable {
 		} else {
 			this.logIfDebug("First is NOT valid, but that's okay")
 		}
-	}
-
-	get lastExpectation() {
-		return this.expectations[this.expectations.length - 1];
 	}
 
 	matches(regex: RegExp): ValidatorCondition {
@@ -140,12 +151,13 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
-	not(): ValidatorCondition {
-		this.lastExpectation.not;
+	explain() {
+		this.lastExpectation.explain();
 		return this;
 	}
 
-	and(): ValidatorCondition {
+	satisfies(expectations: Array<Validatable>): ValidatorCondition {
+		this.lastExpectation.toSatisfy(expectations);
 		return this;
 	}
 }
