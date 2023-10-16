@@ -10,5 +10,21 @@
   },
   "devDependencies": {
     "typescript": "^5.2.2"
-  }
+  },
+  "keywords": [
+    "expectations",
+    "assertions",
+    "testing",
+    "unit testing",
+    "unit tests",
+    "validation",
+    "validation library",
+    "validation framework",
+    "object validation",
+    "object validation library",
+    "object validation framework",
+    "data validation",
+    "data validation library",
+    "data validation framework"
+  ]
 }
