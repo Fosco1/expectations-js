@@ -11,6 +11,7 @@ const data = {
 	acceptTerms: false,
 	email: '',
 	age: 17,
+	hasVectors: true,
 	vectors: [
 		{
 			address: 'test',
@@ -38,11 +39,7 @@ const expectations: Array<Validatable> = [
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	/* when('vectors').isArray().and().not().isEmpty().expect('vectors').toEach((vector, index) => {
-		const res = Expectations.validate(vectorExpectations, vector);
-		return Expectations.ifNotValid(res, `Vector ${index} is invalid.`);
-	}) */
-	/* when('vectors').isArray().not().isEmpty(). */expect('vectors').each().toHaveProperties(['address', 'city', 'state']).ifNot('Vector is invalid.')/* .debug() */,
+	when('hasVectors').is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.').debug(),
 ];
 
 const res = Expectations.validate(expectations, data);

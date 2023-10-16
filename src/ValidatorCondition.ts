@@ -5,8 +5,16 @@ import { ValidatorResult } from "./ValidatorResult";
 
 export default class ValidatorCondition implements Validatable {
 	expectations: Array<ValidatorExpectation>;
+	debugMode: Boolean = false;
+
 	constructor(key: string) {
 		this.expectations = [new ValidatorExpectation(key)];
+	}
+
+	private logIfDebug(...args: any[]) {
+		if(this.debugMode) {
+			console.log(...args);
+		}
 	}
 
 	expect(key: string) {
@@ -15,24 +23,32 @@ export default class ValidatorCondition implements Validatable {
 	}
 
 	debug(): ValidatorCondition {
-		console.log(this.expectations);
+		this.debugMode = true;
 		return this;
 	}
 
 	validate(data: any, res: ValidatorResult) {
+		this.logIfDebug("Validating", this.expectations)
 		/**
-		 * Cycle through each expectation, if the previous one is successful, proceed to the next one.
+		 * Evaluates first expectation, if successful, evaluates second expectation
+		 * If unsuccessful, that's okay, because the first expectation is optional
 		 */
-		res[this.expectations[0].key] = [];
-		const thisRes = res[this.expectations[0].key];
-		for (let i = 0; i < this.expectations.length; i++) {
-			console.log('---validating condition---')
-			const expectation = this.expectations[i];
-			expectation.validate(data, thisRes);
-			if (!Expectations.isValid(thisRes)) {
-				console.log("failed at", i, "with", thisRes);
-				break;
+
+		const firstExpRes = Expectations.validate(this.expectations[0], data);
+		if(Expectations.isValid(firstExpRes)) {
+			this.logIfDebug("First is valid")
+			const secondExpRes = Expectations.validate(this.expectations[1], data);
+			if(Expectations.isValid(secondExpRes)) {
+				this.logIfDebug("Second is valid")
+				// If both are valid, we're done
+				return;
+			} else {
+				res[this.expectations[1].key] = secondExpRes[this.expectations[1].key];
+				this.logIfDebug("Second is NOT valid", secondExpRes)
+				
 			}
+		} else {
+			this.logIfDebug("First is NOT valid, but that's okay")
 		}
 	}
 
