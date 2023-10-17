@@ -1,5 +1,5 @@
 import { isValid } from ".";
-import { ValidatorDescriptor, ValidatorFunction } from "./Expectations";
+import Expectations, { ValidatorDescriptor, ValidatorFunction } from "./Expectations";
 import { Validatable } from "./Validatable";
 import { ValidatorResult } from "./ValidatorResult";
 
@@ -11,10 +11,11 @@ export default class ValidatorExpectation implements Validatable {
 	arrayMode: Boolean = false
 	debugMode: Boolean = false
 	required: Boolean = true
-	missingMessage: string = "Required field"
+	missingMessage: string
 
 	constructor(key: string) {
 		this.key = key;
+		this.missingMessage = Expectations.defaultMissingMessage;
 	}
 
 	logIfDebug(...args: any[]) {

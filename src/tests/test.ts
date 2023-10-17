@@ -1,3 +1,4 @@
+import Expectations from '../Expectations';
 import { when, expect, validate, isValid } from '../index';
 
 const data = {
@@ -32,6 +33,8 @@ const data = {
 	/* required: 'test', */
 };
 
+Expectations.defaultMissingMessage = "I am the default missing message! %key.capitalize%"
+
 const vectorExpectations = [
 	expect('address').toBeString().ifNot('Address must be a string.'),
 	expect('city').toBeString().ifNot('City must be a string.'),
@@ -53,7 +56,8 @@ const expectations = [
 	when('vectors')/* .debug() */.each().satisfies(
 		vectorExpectations
 	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
-	expect('required').ifMissing('Required is missing')
+	expect('required'),
+	expect('required_2').ifMissing("I'm a custom message")
 ];
 
 const res = validate(expectations, data);

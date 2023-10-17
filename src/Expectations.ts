@@ -4,6 +4,8 @@ import ValidatorExpectation from "./ValidatorExpectation";
 import { ValidatorResult } from "./ValidatorResult";
 
 export default class Expectations {
+	static defaultMissingMessage: string = "Missing %key.capitalize%.";
+
 	static validate(expectations: Array<Validatable> | Validatable, data: any) {
 		const res = {} as ValidatorResult;
 		if(!Array.isArray(expectations)) {
