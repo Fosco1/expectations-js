@@ -3,9 +3,17 @@ import { Validatable } from "./Validatable";
 import ValidatorExpectation from "./ValidatorExpectation";
 import { ValidatorResult } from "./ValidatorResult";
 
+enum LogicCondition {
+	AND = "AND",
+	OR = "OR"
+}
+
 export default class ValidatorCondition implements Validatable {
 	expectations: Array<ValidatorExpectation>;
+	conditions = Array<LogicCondition>();
 	debugMode: Boolean = false;
+	errorField?: string;
+	errorMessage?: string;
 
 	constructor(key: string) {
 		this.expectations = [new ValidatorExpectation(key)];
@@ -23,47 +31,66 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
-	get and(): ValidatorCondition {
-		return this;
-	}
-
 	get lastExpectation() {
 		return this.expectations[this.expectations.length - 1];
 	}
 
+	and(key: string): ValidatorCondition {
+		this.logIfDebug("AND", key);
+		this.conditions.push(LogicCondition.AND);
+		this.expectations.push(new ValidatorExpectation(key));
+		return this;
+	}
+
+	or(key: string): ValidatorCondition {
+		this.logIfDebug("OR", key);
+		this.conditions.push(LogicCondition.OR);
+		this.expectations.push(new ValidatorExpectation(key));
+		return this;
+	}
+
 	debug(): ValidatorCondition {
 		this.debugMode = true;
-		this.logIfDebug("--- debug mode started");
+		this.logIfDebug("--- Debug mode started");
+		this.logIfDebug("Last expectation: ", this.lastExpectation.key)
 		return this;
 	}
 
 	expect(key: string): ValidatorCondition {
+		this.logIfDebug("Expecting", key);
 		this.expectations.push(new ValidatorExpectation(key));
 		return this;
 	}
 
 	validate(data: any, res: ValidatorResult) {
 		this.logIfDebug("Validating", this.expectations)
-		/**
-		 * Evaluates first expectation, if successful, evaluates second expectation
-		 * If unsuccessful, that's okay, because the first expectation is optional
-		 */
 
-		const firstExpRes = Expectations.validate(this.expectations[0], data);
-		if(Expectations.isValid(firstExpRes)) {
-			this.logIfDebug("First is valid", firstExpRes)
-			const secondExpRes = Expectations.validate(this.expectations[1], data);
-			res[this.expectations[1].key] = secondExpRes[this.expectations[1].key];
-			if(Expectations.isValid(secondExpRes)) {
-				this.logIfDebug("Second is valid", secondExpRes)
-				// If both are valid, we're done
-				return;
-			} else {
-				this.logIfDebug("Second is NOT valid", secondExpRes)
+		let finalresult = true;
+		this.expectations.some((expectation, index) => {
+			const expRes = Expectations.isValid(expectation.validate(data, res));
+			this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${expRes ? "valid" : "invalid"}`);
+			switch(this.conditions[index]) {
+				case LogicCondition.AND:
+					this.logIfDebug("AND", finalresult, expRes);
+					finalresult = finalresult && expRes;
+					break;
+				case LogicCondition.OR:
+					this.logIfDebug("OR", finalresult, expRes);
+					finalresult = finalresult || expRes;
+					break;
+				default:
+					finalresult = expRes;
+					break;
 			}
-		} else {
-			this.logIfDebug("First is NOT valid, but that's okay")
+			this.logIfDebug("FinalResult is", finalresult);
+			return !finalresult;
+		})
+		this.logIfDebug("Final result is", finalresult);
+		if(this.errorField && this.errorMessage && finalresult) {
+			this.logIfDebug(`Setting error '${this.errorMessage}' to '${this.errorField}'`);
+			res[this.errorField] = this.errorMessage;
 		}
+		return finalresult;
 	}
 
 	matches(regex: RegExp): ValidatorCondition {
@@ -193,6 +220,12 @@ export default class ValidatorCondition implements Validatable {
 
 	satisfies(expectations: Array<Validatable>): ValidatorCondition {
 		this.lastExpectation.toSatisfy(expectations);
+		return this;
+	}
+
+	error(field: string, message: string): ValidatorCondition {
+		this.errorField = field;
+		this.errorMessage = message;
 		return this;
 	}
 }

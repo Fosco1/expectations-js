@@ -31,6 +31,7 @@ const data = {
 	],
 	maybe: "3",
 	/* required: 'test', */
+	weirdField: 2,
 };
 
 Expectations.defaultMissingMessage = "I am the default missing message! %key.capitalize%"
@@ -52,12 +53,14 @@ const expectations = [
 	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
-	expect('address').notRequired().toBeObject().and.toCustom((data) => {return}),
+	expect('address').notRequired().toBeObject().toCustom((data) => {return}),
 	when('vectors')/* .debug() */.each().satisfies(
 		vectorExpectations
 	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
 	expect('required'),
-	expect('required_2').ifMissing("I'm a custom message")
+	expect('required_2').ifMissing("I'm a custom message"),
+	when('weirdField').not.isString().or('weirdField').not.isNumber().error('weirdField', '%key% must be a string or a number.'),
+	expect('weirdField').not.toBeNumber()
 ];
 
 const res = validate(expectations, data);
