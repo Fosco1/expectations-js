@@ -17,3 +17,7 @@ export function isValid(res: ValidatorResult) {
 export function validate(expectations: Array<Validatable> | Validatable, data: any) {
 	return Expectations.validate(expectations, data);
 }
+
+export function setDefaultMissingMessage(message: string) {
+	return Expectations.defaultMissingMessage = message;
+}
