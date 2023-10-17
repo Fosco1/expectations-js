@@ -136,6 +136,41 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
+	isNumeric() {
+		this.lastExpectation.toBeNumeric();
+		return this;
+	}
+
+	isNumber() {
+		this.lastExpectation.toBeNumber();
+		return this;
+	}
+
+	isNumberBetween(min: number, max: number) {
+		this.lastExpectation.toBeNumberBetween(min, max);
+		return this;
+	}
+
+	isNumberGreaterThan(value: number) {
+		this.lastExpectation.toBeNumberGreaterThan(value);
+		return this;
+	}
+
+	isNumberLessThan(value: number) {
+		this.lastExpectation.toBeNumberLessThan(value);
+		return this;
+	}
+
+	isBoolean() {
+		this.lastExpectation.toBeBoolean();
+		return this;
+	}
+
+	isEnum(values: Array<any>) {
+		this.lastExpectation.toBeEnum(values);
+		return this;
+	}
+
 	notRequired(): ValidatorCondition {
 		this.lastExpectation.notRequired();
 		return this;
