@@ -18,7 +18,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	logIfDebug(...args: any[]) {
-		if(this.debugMode) {
+		if (this.debugMode) {
 			console.log("[" + this.key + "]", ...args);
 		}
 	}
@@ -46,7 +46,7 @@ export default class ValidatorExpectation implements Validatable {
 
 	validate(data: any, res: ValidatorResult) {
 		if ((data[this.key] === undefined || data[this.key] === null)) {
-			if(this.required) {
+			if (this.required) {
 				this.logIfDebug("field required, but data is undefined or null, throwing error")
 				res[this.key] = this.processMessage(this.missingMessage);
 				return;
@@ -56,15 +56,15 @@ export default class ValidatorExpectation implements Validatable {
 		}
 
 		this.validatorDescriptors.map((descriptor) => {
-			if(!this.arrayMode) {
+			if (!this.arrayMode) {
 				this.logIfDebug(`running expectation ${descriptor.name} with`, data[this.key], `as ${this.key}`)
 				let lastRes = descriptor.function(data[this.key]);
-				if(lastRes) {
+				if (lastRes) {
 					res[this.key] = lastRes;
 				}
 			} else {
 				this.logIfDebug("[ARRAY] array mode is on, validating each of:", data[this.key])
-				if(!Array.isArray(data[this.key])) {
+				if (!Array.isArray(data[this.key])) {
 					this.logIfDebug("[ARRAY] data is not an array, skipping")
 					return;
 				}
@@ -72,7 +72,7 @@ export default class ValidatorExpectation implements Validatable {
 				data[this.key].forEach((item: any, dataArrayIndex: number) => {
 					this.logIfDebug(`[ARRAY] running expectation ${descriptor.name} with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 					let lastRes = descriptor.function(item, res[this.key][dataArrayIndex]);
-					if(lastRes) {
+					if (lastRes) {
 						res[this.key][dataArrayIndex] = lastRes;
 					} else {
 						res[this.key][dataArrayIndex] = {};
@@ -83,10 +83,10 @@ export default class ValidatorExpectation implements Validatable {
 				});
 			}
 		});
-		if(!this.arrayMode) {
+		if (!this.arrayMode) {
 			this.logIfDebug("[SUBEXP] running subexpectations with", data[this.key], `as ${this.key}`)
 			this.subExpectations.forEach((expectation) => {
-				if(!res[this.key]) {
+				if (!res[this.key]) {
 					res[this.key] = {};
 				}
 				expectation.validate(data[this.key], res[this.key]);
@@ -94,7 +94,7 @@ export default class ValidatorExpectation implements Validatable {
 			});
 		} else {
 			this.logIfDebug("[SUBEXP] [ARRAY] array mode is on, validating array", data[this.key])
-			if(!Array.isArray(data[this.key])) {
+			if (!Array.isArray(data[this.key])) {
 				this.logIfDebug("[SUBEXP] [ARRAY] data is not an array, skipping")
 				return;
 			}
@@ -102,7 +102,7 @@ export default class ValidatorExpectation implements Validatable {
 			data[this.key].forEach((item: any, dataArrayIndex: number) => {
 				this.logIfDebug(`[SUBEXP] [ARRAY] running subexp check with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 				this.subExpectations.forEach((expectation) => {
-					if(!res[this.key][dataArrayIndex]) {
+					if (!res[this.key][dataArrayIndex]) {
 						res[this.key][dataArrayIndex] = {};
 					}
 					expectation.validate(item, res[this.key][dataArrayIndex]);
@@ -111,17 +111,22 @@ export default class ValidatorExpectation implements Validatable {
 		}
 	}
 
-	processMessage(message: string): string {
+	private processMessage(message: string): string {
 		message = message.replace(/%key%/g, this.key);
 		message = message.replace(/%key.capitalize%/g, this.capitalize(this.key));
 
 		return message;
 	}
 
+	private processFailure(message: string) {
+		if (this.reverse) return;
+		return this.processMessage(message)
+	}
+
 	toMatch(regex: RegExp): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toMatch', (data: any, message: string = "Doesn't match the regular expression") => {
-			if (!regex.test(data) && !this.reverse) {
-				return this.processMessage(message);
+			if (!regex.test(data)) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -129,8 +134,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeString(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeString', (data: any, message: string = "Should be a string") => {
-			if (typeof data !== "string" && !this.reverse) {
-				return this.processMessage(message);
+			if (typeof data !== "string") {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -138,8 +143,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBe(value: any): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBe', (data: any, message: string = `Should match ${value}`) => {
-			if (data !== value && !this.reverse) {
-				return this.processMessage(message);
+			if (data !== value) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -147,8 +152,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeGreaterThan(value: number): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeGreaterThan', (data: any, message: string = `Should be greater than ${value}`) => {
-			if (data <= value && !this.reverse) {
-				return this.processMessage(message);
+			if (data <= value) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -156,8 +161,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeLessThan(value: number): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeLessThan', (data: any, message: string = `Should be less than ${value}`) => {
-			if (data >= value && !this.reverse) {
-				return this.processMessage(message);
+			if (data >= value) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -165,17 +170,17 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeArray(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeArray', (data: any, message: string = "Should be an array") => {
-			if (!Array.isArray(data) && !this.reverse) {
-				return this.processMessage(message);
+			if (!Array.isArray(data)) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
 	}
-	
+
 	toBeEmpty(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeEmpty', (data: any, message: string = "Should be empty") => {
-			if (data.length > 0 && !this.reverse) {
-				return this.processMessage(message);
+			if (data.length > 0) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -185,7 +190,7 @@ export default class ValidatorExpectation implements Validatable {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveProperties', (data: any, message: string = "Does not have the required properties.") => {
 			let missingProperties: Array<string> = [];
 			properties.forEach((property) => {
-				if (!data.hasOwnProperty(property) && !this.reverse) {
+				if (!data.hasOwnProperty(property)) {
 					missingProperties.push(property);
 				}
 			});
@@ -198,8 +203,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toHaveProperty(property: string): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveProperty', (data: any, message: string = "Does not have the required property") => {
-			if (!data.hasOwnProperty(property) && !this.reverse) {
-				return this.processMessage(message);
+			if (!data.hasOwnProperty(property)) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -207,8 +212,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toHaveMinimumLength(length: number): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveMinimumLength', (data: any, message: string = `Is too short (minimum: ${length})`) => {
-			if (data.length < length && !this.reverse) {
-				return this.processMessage(message);
+			if (data.length < length) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -216,8 +221,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toHaveMaximumLength(length: number): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveMaximumLength', (data: any, message: string = `Is too long (maximum: ${length})`) => {
-			if (data.length > length && !this.reverse) {
-				return this.processMessage(message);
+			if (data.length > length) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -225,8 +230,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toHaveLengthBetween(minimum: number, maximum: number): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveLengthBetween', (data: any, message: string = `Does not meet the required length (minimum: ${minimum}, maximum: ${maximum})`) => {
-			if (data.length < minimum || data.length > maximum && !this.reverse) {
-				return this.processMessage(message);
+			if (data.length < minimum || data.length > maximum) {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -239,8 +244,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeObject(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeObject', (data: any, message: string = "Should be an object") => {
-			if (typeof data !== "object" && !this.reverse) {
-				return this.processMessage(message);
+			if (typeof data !== "object") {
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -248,57 +253,57 @@ export default class ValidatorExpectation implements Validatable {
 
 	toBeNumeric() {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumeric', (data: any, message: string = "Should be numeric") => {
-			if(typeof data === "number") return;
-			if(!isNaN(data) && !isNaN(parseFloat(data)) && !this.reverse) {
-				return this.processMessage(message);
+			if (typeof data === "number") return;
+			if (!isNaN(data) && !isNaN(parseFloat(data))) {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeNumber() {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumber', (data: any, message: string = "Should be a number") => {
-			if(typeof data !== "number" && !isNaN(data) && !this.reverse) {
-				return this.processMessage(message);
+			if (typeof data !== "number" && !isNaN(data)) {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeNumberBetween(min: number, max: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberBetween', (data: any, message: string = `Should be a number between ${min} and ${max}`) => {
-			if((typeof data !== "number" || !isNaN(data) || data < min || data > max) && !this.reverse) {
-				return this.processMessage(message);
+			if ((typeof data !== "number" || !isNaN(data) || data < min || data > max)) {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeNumberGreaterThan(value: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberGreaterThan', (data: any, message: string = `Should be a number greater than ${value}`) => {
-			if((typeof data !== "number" || !isNaN(data) || data <= value) && !this.reverse) {
-				return this.processMessage(message);
+			if ((typeof data !== "number" || !isNaN(data) || data <= value)) {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeNumberLessThan(value: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberLessThan', (data: any, message: string = `Should be a number smaller than ${value}`) => {
-			if((typeof data !== "number" || !isNaN(data) || data >= value) && !this.reverse) {
-				return this.processMessage(message);
+			if ((typeof data !== "number" || !isNaN(data) || data >= value)) {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeBoolean() {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeBoolean', (data: any, message: string = "Should be a boolean value") => {
-			if(typeof data !== "boolean" && !this.reverse) {
-				return this.processMessage(message);
+			if (typeof data !== "boolean") {
+				return this.processFailure(message)
 			}
 		}))
 	}
 
 	toBeEnum(values: Array<any>) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeEnum', (data: any, message: string = "Should be one of the enum values") => {
-			if(!values.includes(data) && !this.reverse) {
-				return this.processMessage(message);
+			if (!values.includes(data)) {
+				return this.processFailure(message)
 			}
 		}))
 	}
@@ -313,8 +318,8 @@ export default class ValidatorExpectation implements Validatable {
 
 	each(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('each', (data: any, message: string = "Should be an array") => {
-			if (!Array.isArray(data) && !this.reverse) {
-				return this.processMessage(message);
+			if (!Array.isArray(data)) {
+				return this.processFailure(message)
 			}
 			this.logIfDebug("each called, setting array mode to true")
 			this.arrayMode = true;
@@ -328,7 +333,7 @@ export default class ValidatorExpectation implements Validatable {
 		lastDescriptor.function = (data: any) => {
 			return lastDescriptorFunctionClone(data, errorMessage);
 		};
-		
+
 		return this;
 	}
 
