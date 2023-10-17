@@ -44,14 +44,17 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	validate(data: any, res: ValidatorResult) {
-		this.validatorDescriptors.map((descriptor) => {
-			if(!this.required) {
-				this.logIfDebug("field not required, checking if data is undefined or null")
-				if ((data[this.key] === undefined || data[this.key] === null)) {
-					this.logIfDebug("data is undefined or null, skipping")
-					return;
-				}
+		if ((data[this.key] === undefined || data[this.key] === null)) {
+			if(this.required) {
+				this.logIfDebug("field required, but data is undefined or null, throwing error")
+				res[this.key] = "Required field";
+				return;
 			}
+			this.logIfDebug("data is empty but not required, skipping checks")
+			return;
+		}
+
+		this.validatorDescriptors.map((descriptor) => {
 			if(!this.arrayMode) {
 				this.logIfDebug(`running expectation ${descriptor.name} with`, data[this.key], `as ${this.key}`)
 				let lastRes = descriptor.function(data[this.key]);

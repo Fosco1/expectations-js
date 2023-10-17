@@ -97,6 +97,10 @@ const res = validate(data, expectations);
  * }
  */
 ```
+By default, when you `expect` a key, it will be considered required. If you want to allow it to be undefined, you can use the `notRequired` method.
+```typescript
+expect('name').notRequired().toMatch(/^[a-zA-Z]+$/)
+```
 
 ## Interpreting return values
 The `validate` function returns an object, whose keys are set when a validation fails.

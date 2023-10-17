@@ -29,6 +29,7 @@ const data = {
 		1, 2, 3, 4, 5
 	],
 	maybe: "3",
+	/* required: 'test', */
 };
 
 const vectorExpectations = [
@@ -52,6 +53,7 @@ const expectations = [
 	when('vectors')/* .debug() */.each().satisfies(
 		vectorExpectations
 	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
+	expect('required')
 ];
 
 const res = validate(expectations, data);
