@@ -128,7 +128,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBeString(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeString', (data: any, message: string = "Is not a string") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeString', (data: any, message: string = "Should be a string") => {
 			if (typeof data !== "string" && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -137,7 +137,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBe(value: any): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBe', (data: any, message: string = "Doesn't match the provided value") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBe', (data: any, message: string = `Should match ${value}`) => {
 			if (data !== value && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -146,7 +146,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBeGreaterThan(value: number): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeGreaterThan', (data: any, message: string = "Is not greater than the provided value") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeGreaterThan', (data: any, message: string = `Should be greater than ${value}`) => {
 			if (data <= value && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -155,7 +155,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBeLessThan(value: number): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeLessThan', (data: any, message: string = "Is not less than the provided value") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeLessThan', (data: any, message: string = `Should be less than ${value}`) => {
 			if (data >= value && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -164,7 +164,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBeArray(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeArray', (data: any, message: string = "Is not an array") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeArray', (data: any, message: string = "Should be an array") => {
 			if (!Array.isArray(data) && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -173,7 +173,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 	
 	toBeEmpty(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeEmpty', (data: any, message: string = "Is not empty") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeEmpty', (data: any, message: string = "Should be empty") => {
 			if (data.length > 0 && !this.reverse) {
 				return this.processMessage(message);
 			}
@@ -238,12 +238,69 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	toBeObject(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeObject', (data: any, message: string = "Is not an object") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeObject', (data: any, message: string = "Should be an object") => {
 			if (typeof data !== "object" && !this.reverse) {
 				return this.processMessage(message);
 			}
 		}));
 		return this;
+	}
+
+	toBeNumeric() {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumeric', (data: any, message: string = "Should be numeric") => {
+			if(typeof data === "number") return;
+			if(!isNaN(data) && !isNaN(parseFloat(data)) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeNumber() {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumber', (data: any, message: string = "Should be a number") => {
+			if(typeof data !== "number" && !isNaN(data) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeNumberBetween(min: number, max: number) {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberBetween', (data: any, message: string = `Should be a number between ${min} and ${max}`) => {
+			if((typeof data !== "number" || !isNaN(data) || data < min || data > max) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeNumberGreaterThan(value: number) {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberGreaterThan', (data: any, message: string = `Should be a number greater than ${value}`) => {
+			if((typeof data !== "number" || !isNaN(data) || data <= value) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeNumberLessThan(value: number) {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberLessThan', (data: any, message: string = `Should be a number smaller than ${value}`) => {
+			if((typeof data !== "number" || !isNaN(data) || data >= value) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeBoolean() {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeBoolean', (data: any, message: string = "Should be a boolean value") => {
+			if(typeof data !== "boolean" && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
+	}
+
+	toBeEnum(values: Array<any>) {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toBeEnum', (data: any, message: string = "Should be one of the enum values") => {
+			if(!values.includes(data) && !this.reverse) {
+				return this.processMessage(message);
+			}
+		}))
 	}
 
 	// Control functions
@@ -255,7 +312,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	each(): ValidatorExpectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('each', (data: any, message: string = "Is not an array") => {
+		this.validatorDescriptors.push(new ValidatorDescriptor('each', (data: any, message: string = "Should be an array") => {
 			if (!Array.isArray(data) && !this.reverse) {
 				return this.processMessage(message);
 			}
