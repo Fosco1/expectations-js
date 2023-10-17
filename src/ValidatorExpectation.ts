@@ -259,6 +259,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeNumber() {
@@ -267,6 +268,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeNumberBetween(min: number, max: number) {
@@ -275,6 +277,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeNumberGreaterThan(value: number) {
@@ -283,6 +286,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeNumberLessThan(value: number) {
@@ -291,6 +295,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeBoolean() {
@@ -299,6 +304,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	toBeEnum(values: Array<any>) {
@@ -307,6 +313,7 @@ export default class ValidatorExpectation implements Validatable {
 				return this.processFailure(message)
 			}
 		}))
+		return this;
 	}
 
 	// Control functions
@@ -338,10 +345,14 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
-	explain() {
-		this.logIfDebug("validation process:", this.validatorDescriptors.map((descriptor) => {
+	validatorsList(): string {
+		return this.validatorDescriptors.map((descriptor) => {
 			return descriptor.name;
-		}).join(", "));
+		}).join(", ");
+	}
+
+	explain() {
+		this.logIfDebug("validation process:", this.validatorsList());
 		return this;
 	}
 
