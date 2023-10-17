@@ -53,7 +53,7 @@ const expectations = [
 	when('vectors')/* .debug() */.each().satisfies(
 		vectorExpectations
 	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
-	expect('required')
+	expect('required').ifMissing('Required is missing')
 ];
 
 const res = validate(expectations, data);

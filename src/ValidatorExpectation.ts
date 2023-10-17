@@ -11,6 +11,7 @@ export default class ValidatorExpectation implements Validatable {
 	arrayMode: Boolean = false
 	debugMode: Boolean = false
 	required: Boolean = true
+	missingMessage: string = "Required field"
 
 	constructor(key: string) {
 		this.key = key;
@@ -47,7 +48,7 @@ export default class ValidatorExpectation implements Validatable {
 		if ((data[this.key] === undefined || data[this.key] === null)) {
 			if(this.required) {
 				this.logIfDebug("field required, but data is undefined or null, throwing error")
-				res[this.key] = "Required field";
+				res[this.key] = this.processMessage(this.missingMessage);
 				return;
 			}
 			this.logIfDebug("data is empty but not required, skipping checks")
@@ -283,6 +284,11 @@ export default class ValidatorExpectation implements Validatable {
 
 	toSatisfy(expectations: Array<Validatable>) {
 		this.subExpectations = expectations;
+		return this;
+	}
+
+	ifMissing(message: string) {
+		this.missingMessage = message;
 		return this;
 	}
 }
