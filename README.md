@@ -53,10 +53,6 @@ If you need to run an inverse check, just use `not`.
 ```typescript
 expect('name').not.toMatch(/^[a-zA-Z]+$/)
 ```
-An `and` is also available. It is not necessary, but it can make the code more readable. 
-```typescript
-expect('name').toMatch(/^[a-zA-Z]+$/).and.not.toEqual('John')
-```
 If you need to perform a validation on multiple items (e.g. an array), you can use the `each` method. 
 ```typescript
 expect('names').each().toMatch(/^[a-zA-Z]+$/)

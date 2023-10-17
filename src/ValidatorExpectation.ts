@@ -35,10 +35,6 @@ export default class ValidatorExpectation implements Validatable {
 		return this;
 	}
 
-	get and(): ValidatorExpectation {
-		return this;
-	}
-
 	debug(): ValidatorExpectation {
 		this.debugMode = true;
 		this.logIfDebug("--- debug mode started");
