@@ -49,6 +49,10 @@ You can then chain methods to it, to create a validation rule.
 ```typescript
 expect('name').toMatch(/^[a-zA-Z]+$/)
 ```
+By default, when you `expect` a key, it will be considered required. If you want to allow it to be undefined, you can use the `notRequired` method.
+```typescript
+expect('name').notRequired().toMatch(/^[a-zA-Z]+$/)
+```
 If you need to run an inverse check, just use `not`. 
 ```typescript
 expect('name').not.toMatch(/^[a-zA-Z]+$/)
@@ -59,7 +63,7 @@ expect('names').each().toMatch(/^[a-zA-Z]+$/)
 ```
 For more complex operations (e.g. two values dependent on eachother), use the `when` method.
 ```typescript
-when('age').isLessThan(18).expect('name').not.toEqual('John')
+when('age').isLessThan(18).expect('name').not.is('John')
 ```
 You can also chain the `ifNot` method to set a custom error message.
 ```typescript
@@ -93,11 +97,10 @@ const res = validate(data, expectations);
  * }
  */
 ```
-By default, when you `expect` a key, it will be considered required. If you want to allow it to be undefined, you can use the `notRequired` method.
+You can chain these conditions with the `and` and `or` methods, and use the `error` method to set a custom error message.
 ```typescript
-expect('name').notRequired().toMatch(/^[a-zA-Z]+$/)
+when('age').isLessThan(18).and('parentConsent').is(false).error('parentConsent', "You must have your parent's consent to use this service")
 ```
-
 ## Interpreting return values
 The `validate` function returns an object, whose keys are set when a validation fails.
 If the key corresponds to an array, it will by default create an empty array. Check for failures in the array, to see what went wrong. 
