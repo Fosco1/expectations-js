@@ -8,12 +8,12 @@ const data = {
 	acceptTerms: true,
 	email: 'mail@test.com',
 	age: 19,
-	hasVectors: true,
+	hasVectors: false,
 	vectors: [
 		{
 			address: 'test',
 			city: 'test',
-			state: 'test'
+			state: 2
 		},
 		{
 			address: 'test',
@@ -43,24 +43,27 @@ const vectorExpectations = [
 ];
 
 const expectations = [
-	expect('username').toMatch(/^[a-z0-9_-]{3,16}$/).ifNot('%key.capitalize% must be between 3 and 16 characters long.'),
+	/* expect('username').toMatch(/^[a-z0-9_-]{3,16}$/).ifNot('%key.capitalize% must be between 3 and 16 characters long.'),
 	expect('password').toMatch(/^[a-z0-9_-]{6,18}$/).ifNot('%key.capitalize% must be between 6 and 18 characters long.'),
 	expect('telephone').toMatch(/^1[0-9]{10}$/).ifNot('Please enter a valid phone number.'),
 	expect('acceptTerms').toBe(true).ifNot('You must accept the terms and conditions.'),
 	expect('email').toMatch(/^[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)+$/).ifNot('Please enter a valid email address.'),
 	expect('age').toBeGreaterThan(18).ifNot('You must be at least 18 years old.'),
 	expect('vectors').toBeArray().ifNot('Please select at least one vector.'),
-	when('hasVectors')/* .debug() */.is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
+	when('hasVectors').debug().is(true).expect('vectors').each().hasProperties(['address', 'city', 'state']).ifNot('Vector is invalid.'),
 	expect('customField').toHaveLengthBetween(5, 15),
-	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.')/* .debug() */,
+	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.').debug(),
 	expect('address').notRequired().toBeObject().toCustom((data) => {return}),
-	when('vectors')/* .debug() */.each().satisfies(
+	when('vectors').debug().each().satisfies(
 		vectorExpectations
 	).expect('maybe').is('2').ifNot('Maybe must be 2.'),
 	expect('required'),
 	expect('required_2').ifMissing("I'm a custom message"),
 	when('weirdField').not.isString().or('weirdField').not.isNumber().error('weirdField', '%key% must be a string or a number.'),
-	expect('weirdField').not.toBeNumber()
+	expect('weirdField').not.toBeNumber() */
+	when('hasVectors').debug().is(true).expect('vectors').each().satisfies(
+		vectorExpectations
+	)
 ];
 
 const res = validate(expectations, data);

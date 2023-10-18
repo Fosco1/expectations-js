@@ -12,6 +12,7 @@ export default class ValidatorExpectation implements Validatable {
 	debugMode: Boolean = false
 	required: Boolean = true
 	missingMessage: string
+	propertyType: string = 'undefined'
 
 	constructor(key: string) {
 		this.key = key;
@@ -21,6 +22,28 @@ export default class ValidatorExpectation implements Validatable {
 	logIfDebug(...args: any[]) {
 		if (this.debugMode) {
 			console.log("[" + this.key + "]", ...args);
+		}
+	}
+
+	private getType(val: any): string {
+		const type = typeof val
+		if(type == 'object') {
+			if (Array.isArray(val)) return 'array'
+			if (val === null) return 'null'
+			return 'object'
+		}
+		if(type == "number" && isNaN(val)) return 'NaN'
+		return type
+	}
+
+	private defaultIfEmpty() {
+		switch(this.propertyType) {
+			case 'object':
+				return {};
+			case 'array':
+				return [];
+			default:
+				return undefined;
 		}
 	}
 
@@ -42,6 +65,7 @@ export default class ValidatorExpectation implements Validatable {
 	}
 
 	validate(data: any, res: ValidatorResult) {
+		this.propertyType = this.getType(data[this.key])
 		if ((data[this.key] === undefined || data[this.key] === null)) {
 			if (this.required) {
 				this.logIfDebug("field required, but data is undefined or null, throwing error")
@@ -65,7 +89,7 @@ export default class ValidatorExpectation implements Validatable {
 					this.logIfDebug("[ARRAY] data is not an array, skipping")
 					return;
 				}
-				res[this.key] = [];
+				res[this.key] = this.defaultIfEmpty();
 				data[this.key].forEach((item: any, dataArrayIndex: number) => {
 					this.logIfDebug(`[ARRAY] running expectation ${descriptor.name} with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 					let lastRes = descriptor.function(item, res[this.key][dataArrayIndex]);
@@ -84,7 +108,7 @@ export default class ValidatorExpectation implements Validatable {
 			this.logIfDebug("[SUBEXP] running subexpectations with", data[this.key], `as ${this.key}`)
 			this.subExpectations.forEach((expectation) => {
 				if (!res[this.key]) {
-					res[this.key] = {};
+					res[this.key] = this.defaultIfEmpty();
 				}
 				expectation.validate(data[this.key], res[this.key]);
 				this.logIfDebug("[SUBEXP] validating item", data[this.key], isValid(res[this.key]) ? 'was' : 'was NOT', 'successful')
@@ -95,7 +119,7 @@ export default class ValidatorExpectation implements Validatable {
 				this.logIfDebug("[SUBEXP] [ARRAY] data is not an array, skipping")
 				return;
 			}
-			res[this.key] = [];
+			res[this.key] = this.defaultIfEmpty();
 			data[this.key].forEach((item: any, dataArrayIndex: number) => {
 				this.logIfDebug(`[SUBEXP] [ARRAY] running subexp check with`, data[this.key], `as ${this.key} at index ${dataArrayIndex}`)
 				this.subExpectations.forEach((expectation) => {

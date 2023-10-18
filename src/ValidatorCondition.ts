@@ -67,19 +67,21 @@ export default class ValidatorCondition implements Validatable {
 
 		let finalresult = true;
 		this.expectations.some((expectation, index) => {
-			const expRes = Expectations.isValid(expectation.validate(data, res));
-			this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${expRes ? "valid" : "invalid"}`);
+			let tempRes = {};
+			expectation.validate(data, tempRes);
+			const validated = Expectations.isValid(tempRes);
+			this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
 			switch(this.conditions[index]) {
 				case LogicCondition.AND:
-					this.logIfDebug("AND", finalresult, expRes);
-					finalresult = finalresult && expRes;
+					this.logIfDebug("AND", finalresult, validated);
+					finalresult = finalresult && validated;
 					break;
 				case LogicCondition.OR:
-					this.logIfDebug("OR", finalresult, expRes);
-					finalresult = finalresult || expRes;
+					this.logIfDebug("OR", finalresult, validated);
+					finalresult = finalresult || validated;
 					break;
 				default:
-					finalresult = expRes;
+					finalresult = validated;
 					break;
 			}
 			this.logIfDebug("FinalResult is", finalresult);
