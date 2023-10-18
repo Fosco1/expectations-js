@@ -104,6 +104,9 @@ export default class Condition implements Validatable {
 		let conditionsMet = true;
 		this.conditions.some((expectation, index) => {
 			let tempRes = {};
+			if(this.debugMode) {
+				expectation = expectation.debug();
+			}
 			expectation.validate(data, tempRes);
 			const validated = ExpectationsJS.isValid(tempRes);
 			this.logIfDebug(`Condition '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
@@ -129,8 +132,11 @@ export default class Condition implements Validatable {
 				res[this.errorField] = ExpectationsJS.processMessage(this.errorMessage, this.errorField);
 			}
 			this.expectations.forEach((expectation, index) => {
-				this.logIfDebug(`Expecting '${expectation.key}' to '${expectation.validatorsList()}'`);
+				this.logIfDebug(`Expecting '${expectation.key}' to '${expectation.validatorsList()}' with `, data);
 				let tempRes = {};
+				if(this.debugMode) {
+					expectation = expectation.debug();
+				}
 				expectation.validate(data, tempRes);
 				const validated = ExpectationsJS.isValid(tempRes);
 				this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
