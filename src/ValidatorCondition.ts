@@ -58,9 +58,15 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
-	then(expectation: ValidatorExpectation): ValidatorCondition {
-		this.logIfDebug("Expecting", expectation.key, "to", expectation.validatorsList());
-		this.expectations.push(expectation);
+	then(expectations: ValidatorExpectation | Array<ValidatorExpectation>): ValidatorCondition {
+		if(!Array.isArray(expectations)) {
+			expectations = [expectations];
+		}
+		this.logIfDebug("THEN");
+		expectations.forEach(expectation => {
+			this.logIfDebug("\tExpecting", expectation.key, "to", expectation.validatorsList());
+			this.expectations.push(expectation);
+		})
 		return this;
 	}
 
