@@ -1,9 +1,9 @@
 import { Validatable } from "./Validatable";
-import ValidatorCondition from "./ValidatorCondition";
-import ValidatorExpectation from "./ValidatorExpectation";
+import Condition from "./Condition";
+import Expectation from "./Expectation";
 import { ValidatorResult } from "./ValidatorResult";
 
-export default class Expectations {
+export default class ExpectationsJS {
 	static defaultMissingMessage: string = "Missing %key.capitalize%.";
 
 	static validate(expectations: Array<Validatable> | Validatable, data: any) {
@@ -56,11 +56,11 @@ export default class Expectations {
 	}
 
 	static expect(key: string) {
-		return new ValidatorExpectation(key);
+		return new Expectation(key);
 	}
 
 	static when(key: string) {
-		return new ValidatorCondition(key);
+		return new Condition(key);
 	}
 }
 

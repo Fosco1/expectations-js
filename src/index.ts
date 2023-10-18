@@ -1,23 +1,23 @@
-import Expectations from "./Expectations";
+import ExpectationsJS from "./ExpectationsJS";
 import { Validatable } from "./Validatable";
 import { ValidatorResult } from "./ValidatorResult";
 
 export function when(key: string)  {
-	return Expectations.when(key);
+	return ExpectationsJS.when(key);
 }
 
 export function expect(key: string) {
-	return Expectations.expect(key);
+	return ExpectationsJS.expect(key);
 }
 
 export function isValid(res: ValidatorResult) {
-	return Expectations.isValid(res);
+	return ExpectationsJS.isValid(res);
 }
 
 export function validate(expectations: Array<Validatable> | Validatable, data: any) {
-	return Expectations.validate(expectations, data);
+	return ExpectationsJS.validate(expectations, data);
 }
 
 export function setDefaultMissingMessage(message: string) {
-	return Expectations.defaultMissingMessage = message;
+	return ExpectationsJS.defaultMissingMessage = message;
 }

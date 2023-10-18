@@ -44,7 +44,7 @@ const valid = isValid(data, expectations);
 ```
 
 ## API
-The `expect` function takes a key, and creates a `ValidatorExpectation` object. 
+The `expect` function takes a key, and creates a `Expectation` object. 
 You can then chain methods to it, to create a validation rule. 
 ```typescript
 expect('name').toMatch(/^[a-zA-Z]+$/)
@@ -70,7 +70,14 @@ when('age').isLessThan(18).then([
 	expect('surname').not.toBe('Doe'),
 ])
 ```
+You can chain these conditions with the `and` and `or` methods.
+```typescript
+when('age').isLessThan(18).and('parentConsent').is(true).then(expect('name').not.toBe('Mike')) // Mike is a bad kid, he can't ever use this service
+when('age').isLessThan(18).or('parentConsent').is(false).then(expect('name').toBe('John')) // John is special, he doesn't need his parents' consent
+```
 You can also chain the `ifNot` method to set a custom error message.
+> NOTE: The `ifNot` method will only be called if the validation fails.
+> NOTE: The `ifNot` method can only be used in `expect` chains, since the `when` method can't produce errors on its own (except for the `error` method).
 ```typescript
 expect('age').toBeLessThan(18).ifNot('You must be 18 or older')
 ```

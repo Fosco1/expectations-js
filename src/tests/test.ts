@@ -1,4 +1,4 @@
-import Expectations from '../Expectations';
+import ExpectationsJS from '../ExpectationsJS';
 import { when, expect, validate, isValid } from '../index';
 
 const data = {
@@ -34,7 +34,7 @@ const data = {
 	weirdField: 2,
 };
 
-Expectations.defaultMissingMessage = "I am the default missing message! %key.capitalize%"
+ExpectationsJS.defaultMissingMessage = "I am the default missing message! %key.capitalize%"
 
 const vectorExpectations = [
 	expect('address').toBeString().ifNot('Address must be a string.'),
