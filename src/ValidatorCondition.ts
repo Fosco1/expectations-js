@@ -3,20 +3,22 @@ import { Validatable } from "./Validatable";
 import ValidatorExpectation from "./ValidatorExpectation";
 import { ValidatorResult } from "./ValidatorResult";
 
-enum LogicCondition {
+enum LogicOperator {
 	AND = "AND",
 	OR = "OR"
 }
 
 export default class ValidatorCondition implements Validatable {
+	conditions: Array<ValidatorExpectation>;
 	expectations: Array<ValidatorExpectation>;
-	conditions = Array<LogicCondition>();
+	operators = Array<LogicOperator>();
 	debugMode: Boolean = false;
 	errorField?: string;
 	errorMessage?: string;
 
 	constructor(key: string) {
-		this.expectations = [new ValidatorExpectation(key)];
+		this.conditions = [new ValidatorExpectation(key)];
+		this.expectations = [];
 	}
 
 	logIfDebug(...args: any[]) {
@@ -32,20 +34,20 @@ export default class ValidatorCondition implements Validatable {
 	}
 
 	get lastExpectation() {
-		return this.expectations[this.expectations.length - 1];
+		return this.conditions[this.conditions.length - 1];
 	}
 
 	and(key: string): ValidatorCondition {
 		this.logIfDebug("AND", key);
-		this.conditions.push(LogicCondition.AND);
-		this.expectations.push(new ValidatorExpectation(key));
+		this.operators.push(LogicOperator.AND);
+		this.conditions.push(new ValidatorExpectation(key));
 		return this;
 	}
 
 	or(key: string): ValidatorCondition {
 		this.logIfDebug("OR", key);
-		this.conditions.push(LogicCondition.OR);
-		this.expectations.push(new ValidatorExpectation(key));
+		this.operators.push(LogicOperator.OR);
+		this.conditions.push(new ValidatorExpectation(key));
 		return this;
 	}
 
@@ -56,43 +58,50 @@ export default class ValidatorCondition implements Validatable {
 		return this;
 	}
 
-	expect(key: string): ValidatorCondition {
-		this.logIfDebug("Expecting", key);
-		this.expectations.push(new ValidatorExpectation(key));
+	then(expectation: ValidatorExpectation): ValidatorCondition {
+		this.logIfDebug("Expecting", expectation.key, "to", expectation.validatorsList());
+		this.expectations.push(expectation);
 		return this;
 	}
 
 	validate(data: any, res: ValidatorResult) {
-		this.logIfDebug("Validating", this.expectations)
+		this.logIfDebug("[VALIDATING] conditions")
 
-		let finalresult = true;
-		this.expectations.some((expectation, index) => {
+		let finalResult = true;
+		this.conditions.some((expectation, index) => {
 			let tempRes = {};
 			expectation.validate(data, tempRes);
 			const validated = Expectations.isValid(tempRes);
-			this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
-			switch(this.conditions[index]) {
-				case LogicCondition.AND:
-					this.logIfDebug("AND", finalresult, validated);
-					finalresult = finalresult && validated;
+			this.logIfDebug(`Conditions '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
+			switch(this.operators[index]) {
+				case LogicOperator.AND:
+					this.logIfDebug("AND");
+					finalResult = finalResult && validated;
 					break;
-				case LogicCondition.OR:
-					this.logIfDebug("OR", finalresult, validated);
-					finalresult = finalresult || validated;
+				case LogicOperator.OR:
+					this.logIfDebug("OR");
+					finalResult = finalResult || validated;
 					break;
 				default:
-					finalresult = validated;
+					finalResult = validated;
 					break;
 			}
-			this.logIfDebug("FinalResult is", finalresult);
-			return !finalresult;
+			return !finalResult;
 		})
-		this.logIfDebug("Final result is", finalresult);
-		if(this.errorField && this.errorMessage && finalresult) {
-			this.logIfDebug(`Setting error '${this.errorMessage}' to '${this.errorField}'`);
-			res[this.errorField] = this.errorMessage;
+		if(finalResult) {
+			this.logIfDebug("Conditions are valid, validating expectations")
+			if(this.errorField && this.errorMessage) {
+				this.logIfDebug(`Setting error '${this.errorMessage}' to '${this.errorField}'`);
+				res[this.errorField] = Expectations.processMessage(this.errorMessage, this.errorField);
+			}
+			this.expectations.forEach((expectation) => {
+				this.logIfDebug(`Expecting '${expectation.key}' to '${expectation.validatorsList()}'`);
+				expectation.validate(data, res);
+			})
+		} else {
+			this.logIfDebug("Conditions are NOT valid, skipping expectations")
 		}
-		return finalresult;
+		return finalResult;
 	}
 
 	matches(regex: RegExp): ValidatorCondition {
