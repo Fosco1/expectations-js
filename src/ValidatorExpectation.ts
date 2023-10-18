@@ -47,10 +47,6 @@ export default class ValidatorExpectation implements Validatable {
 		}
 	}
 
-	private capitalize(str: string): string {
-		return str.charAt(0).toUpperCase() + str.slice(1);
-	}
-
 	get not(): ValidatorExpectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('not', (data: any, message: string = "") => {
 			this.reverse = !this.reverse;
@@ -69,7 +65,7 @@ export default class ValidatorExpectation implements Validatable {
 		if ((data[this.key] === undefined || data[this.key] === null)) {
 			if (this.required) {
 				this.logIfDebug("field required, but data is undefined or null, throwing error")
-				res[this.key] = this.processMessage(this.missingMessage);
+				res[this.key] = Expectations.processMessage(this.missingMessage, this.key);
 				return;
 			}
 			this.logIfDebug("data is empty but not required, skipping checks")
@@ -132,16 +128,9 @@ export default class ValidatorExpectation implements Validatable {
 		}
 	}
 
-	private processMessage(message: string): string {
-		message = message.replace(/%key%/g, this.key);
-		message = message.replace(/%key.capitalize%/g, this.capitalize(this.key));
-
-		return message;
-	}
-
 	private processFailure(message: string) {
 		if (this.reverse) return;
-		return this.processMessage(message)
+		return Expectations.processMessage(message, this.key)
 	}
 
 	toMatch(regex: RegExp): ValidatorExpectation {
@@ -216,7 +205,7 @@ export default class ValidatorExpectation implements Validatable {
 				}
 			});
 			if (missingProperties.length > 0) {
-				return this.processMessage(message) + " Missing properties: " + missingProperties.join(", ");
+				return Expectations.processMessage(message, this.key) + " Missing properties: " + missingProperties.join(", ");
 			}
 		}));
 		return this;

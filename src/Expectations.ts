@@ -17,6 +17,17 @@ export default class Expectations {
 		return res;
 	}
 
+	static processMessage(message: string, key: string): string {
+		message = message.replace(/%key%/g, key);
+		message = message.replace(/%key.capitalize%/g, this.capitalize(key));
+
+		return message;
+	}
+
+	private static capitalize(str: string): string {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
 	/**
 	 * Checks recursively if res has a property set which is a string.
 	 * If it has an array, checks each item with the same function.
