@@ -62,8 +62,13 @@ If you need to perform a validation on multiple items (e.g. an array), you can u
 expect('names').each().toMatch(/^[a-zA-Z]+$/)
 ```
 For more complex operations (e.g. two values dependent on eachother), use the `when` method.
+You can `then` expect a key to be a certain value, or `then` expect some more expectations.
 ```typescript
-when('age').isLessThan(18).expect('name').not.is('John')
+when('age').isLessThan(18).then(expect('name').not.toBe('John'))
+when('age').isLessThan(18).then([
+	expect('name').not.toBe('John'),
+	expect('surname').not.toBe('Doe'),
+])
 ```
 You can also chain the `ifNot` method to set a custom error message.
 ```typescript
@@ -114,7 +119,9 @@ const data = {
 }
 const expectations = [
 	expect('name').toMatch(/^[a-zA-Z]+$/),
-	when('age').isLessThan(18).expect('name').not.toEqual('John').ifNot("Sorry John, you're too young"),
+	when('age').isLessThan(18).then(
+		expect('name').not.toEqual('John').ifNot("Sorry John, you're too young")
+	),
 	expect('agreeToTerms').toBe(true).ifNot('You must agree to the terms'),
 ]
 const res = validate(data, expectations);
