@@ -75,11 +75,12 @@ You can chain these conditions with the `and` and `or` methods.
 when('age').isLessThan(18).and('parentConsent').is(true).then(expect('name').not.toBe('Mike')) // Mike is a bad kid, he can't ever use this service
 when('age').isLessThan(18).or('parentConsent').is(false).then(expect('name').toBe('John')) // John is special, he doesn't need his parents' consent
 ```
-You can also chain the `ifNot` method to set a custom error message.
-> NOTE: The `ifNot` method will only be called if the validation fails.
-> NOTE: The `ifNot` method can only be used in `expect` chains, since the `when` method can't produce errors on its own (except for the `error` method).
+You can also chain the `onConditionsMet`, `onConditionsNotMet`, `onExpectationsMet`, `onExpectationsNotMet` methods to set custom error messages.
 ```typescript
-expect('age').toBeLessThan(18).ifNot('You must be 18 or older')
+when('age').isLessThan(18).and('parentConsent').is(false).onConditionsNotMet('parentConsent', "You must have your parent's consent to use this service")
+```
+```typescript
+when('age').isLessThan(18)
 ```
 If you put a `%key%` in the error message, it will be replaced with the value of the key.
 If you need it capitalized, just use `%key.capitalize%`.

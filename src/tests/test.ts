@@ -31,7 +31,7 @@ const data = {
 	],
 	maybe: 3,
 	required: 'test',
-	weirdField: 2,
+	weirdField: [2],
 };
 
 ExpectationsJS.defaultMissingMessage = "I am the default missing message! %key.capitalize%"
@@ -63,7 +63,7 @@ const expectations = [
 	),
 	expect('required'),
 	expect('required_2').ifMissing("I'm a custom message"),
-	when('weirdField').not.isString().or('weirdField').not.isNumber().error('weirdField', '%key% must be a string or a number.'),
+	when('weirdField')./* debug(). */not.isString().and('weirdField').not.isNumber().onConditionsMet('weirdField', '%key.capitalize% must be a string or a number.'),
 	expect('weirdField').not.toBeNumber(),
 	when('hasVectors').is(true).then(expect('vectors').each().toSatisfy(
 		vectorExpectations

@@ -8,18 +8,58 @@ enum LogicOperator {
 	OR = "OR"
 }
 
+type FieldErrorInfo = {
+	field: string,
+	message: string,
+	set: boolean,
+}
+
+function makeFieldErrorObject(field: string, message: string): FieldErrorInfo {
+	return {
+		field,
+		message,
+		set: true,
+	}
+}
+
+function makeEmptyFieldErrorObject(): FieldErrorInfo {
+	return {
+		field: '',
+		message: '',
+		set: false,
+	}
+}
+
 export default class Condition implements Validatable {
 	conditions: Array<Expectation>;
 	expectations: Array<Expectation>;
 	conditionOperators = Array<LogicOperator>();
 	expectationOperators = Array<LogicOperator>();
 	debugMode: Boolean = false;
-	errorField?: string;
-	errorMessage?: string;
+	private errorInfo: {
+		conditions: {
+			met: FieldErrorInfo,
+			notMet: FieldErrorInfo,
+		},
+		expectations: {
+			met: FieldErrorInfo,
+			notMet: FieldErrorInfo,
+		}
+	}
 
 	constructor(key: string) {
 		this.conditions = [new Expectation(key)];
 		this.expectations = [];
+		this.errorInfo = {
+			conditions: {
+				met: makeEmptyFieldErrorObject(),
+				notMet: makeEmptyFieldErrorObject()
+			},
+			expectations: {
+				met: makeEmptyFieldErrorObject(),
+				notMet: makeEmptyFieldErrorObject()
+			}
+		}
 	}
 
 	logIfDebug(...args: any[]) {
@@ -98,6 +138,13 @@ export default class Condition implements Validatable {
 		return this;
 	}
 
+	private setError(info: FieldErrorInfo, res: ValidatorResult) {
+		if(info.set) {
+			this.logIfDebug(`Setting error '${info.message}' to '${info.field}'`);
+			res[info.field] = ExpectationsJS.processMessage(info.message, info.field);
+		}
+	}
+
 	validate(data: any, res: ValidatorResult) {
 		this.logIfDebug("[VALIDATING] conditions")
 
@@ -125,41 +172,56 @@ export default class Condition implements Validatable {
 			}
 			return !conditionsMet;
 		})
-		if(conditionsMet) {
-			this.logIfDebug("Conditions are met, validating expectations")
-			if(this.errorField && this.errorMessage) {
-				this.logIfDebug(`Setting error '${this.errorMessage}' to '${this.errorField}'`);
-				res[this.errorField] = ExpectationsJS.processMessage(this.errorMessage, this.errorField);
-			}
-			this.expectations.forEach((expectation, index) => {
-				this.logIfDebug(`Expecting '${expectation.key}' to '${expectation.validatorsList()}' with `, data);
-				let tempRes = {};
-				if(this.debugMode) {
-					expectation = expectation.debug();
-				}
-				expectation.validate(data, tempRes);
-				const validated = ExpectationsJS.isValid(tempRes);
-				this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
-				switch(this.expectationOperators[index]) {
-					case LogicOperator.AND:
-						this.logIfDebug("AND");
-						res[expectation.key] = tempRes;
-						break;
-					case LogicOperator.OR:
-						this.logIfDebug("OR");
-						if(!validated) {
-							res[expectation.key] = tempRes;
-						}
-						break;
-					default:
-						res[expectation.key] = tempRes;
-						break;
-				}
-			})
-		} else {
+		if(!conditionsMet) {
 			this.logIfDebug("Conditions are NOT met, skipping expectations")
+			this.setError(this.errorInfo.conditions.notMet, res);
+			return false;
 		}
-		return conditionsMet;
+
+		this.setError(this.errorInfo.conditions.met, res);
+		this.logIfDebug("Conditions are met, validating expectations")
+		let expectationsMet = true;
+
+		let expectationsRes = {};
+		this.expectations.some((expectation, index) => {
+			const tempRes = {};
+			if(this.debugMode) {
+				expectation = expectation.debug();
+			}
+			expectation.validate(data, tempRes);
+			const validated = ExpectationsJS.isValid(tempRes);
+			this.logIfDebug(`Expectation '${expectation.key}' to '${expectation.validatorsList()}' is ${validated ? "valid" : "invalid"}`);
+			switch(this.conditionOperators[index]) {
+				case LogicOperator.AND:
+					this.logIfDebug("AND");
+					expectationsMet = expectationsMet && validated;
+					expectationsRes = {...expectationsRes, ...tempRes};
+					break;
+				case LogicOperator.OR:
+					this.logIfDebug("OR");
+					expectationsMet = expectationsMet || validated;
+					expectationsRes = {...expectationsRes, ...tempRes};
+					break;
+				default:
+					expectationsMet = validated;
+					break;
+			}
+			return !expectationsMet;
+		})
+
+		if(!expectationsMet) {
+			this.logIfDebug("Expectations are NOT met")
+			if(this.errorInfo.expectations.notMet.set) {
+				this.setError(this.errorInfo.expectations.notMet, res);
+			} else {
+				res = {...res, ...expectationsRes};
+			}
+			return false;
+		}
+		this.setError(this.errorInfo.expectations.met, res);
+		this.logIfDebug("Expectations are met")
+
+		return expectationsMet;
 	}
 
 	matches(regex: RegExp): Condition {
@@ -287,9 +349,23 @@ export default class Condition implements Validatable {
 		return this;
 	}
 
-	error(field: string, message: string): Condition {
-		this.errorField = field;
-		this.errorMessage = message;
+	onConditionsMet(field: string, message: string): Condition {
+		this.errorInfo.conditions.met = makeFieldErrorObject(field, message);
+		return this;
+	}
+
+	onConditionsNotMet(field: string, message: string): Condition {
+		this.errorInfo.conditions.notMet = makeFieldErrorObject(field, message);
+		return this;
+	}
+
+	onExpectationsMet(field: string, message: string): Condition {
+		this.errorInfo.expectations.met = makeFieldErrorObject(field, message);
+		return this;
+	}
+	
+	onExpectationsNotMet(field: string, message: string): Condition {
+		this.errorInfo.expectations.notMet = makeFieldErrorObject(field, message);
 		return this;
 	}
 }
