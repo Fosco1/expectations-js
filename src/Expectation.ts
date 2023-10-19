@@ -264,7 +264,7 @@ export default class Expectation implements Validatable {
 	toBeNumeric() {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumeric', (data: any, message: string = "Should be numeric") => {
 			if (typeof data === "number") return;
-			if (!isNaN(data) && !isNaN(parseFloat(data))) {
+			if (isNaN(data) || isNaN(parseFloat(data))) {
 				return this.processFailure(message)
 			}
 		}))
@@ -273,7 +273,7 @@ export default class Expectation implements Validatable {
 
 	toBeNumber() {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumber', (data: any, message: string = "Should be a number") => {
-			if (typeof data !== "number" && !isNaN(data)) {
+			if (typeof data !== "number" || isNaN(data)) {
 				return this.processFailure(message)
 			}
 		}))
