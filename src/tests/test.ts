@@ -1,5 +1,6 @@
-import ExpectationsJS from '../ExpectationsJS';
-import { when, expect, validate, isValid } from '../index';
+import ExpectationsJS from "../ExpectationsJS.js";
+import { expect, isValid, validate, when } from "../index.js";
+
 
 const data = {
 	username: 'test',
@@ -55,7 +56,7 @@ const expectations = [
 	),
 	expect('customField').toHaveLengthBetween(5, 15),
 	expect('maybe').notRequired().toBeString().ifNot('%key.capitalize% must be a string.'),
-	expect('address').notRequired().toBeObject().toCustom((data) => {return}),
+	expect('address').notRequired().toBeObject().toCustom((data: any) => {return}),
 	when('vectors').each().satisfies(
 		vectorExpectations
 	).then(

@@ -1,6 +1,7 @@
-import ExpectationsJS from "./ExpectationsJS";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import ExpectationsJS from "./ExpectationsJS.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
+
 
 export function when(key: string)  {
 	return ExpectationsJS.when(key);

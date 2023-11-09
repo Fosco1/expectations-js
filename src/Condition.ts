@@ -1,7 +1,8 @@
-import ExpectationsJS, { ValidatorFunction } from "./ExpectationsJS";
-import { Validatable } from "./Validatable";
-import Expectation from "./Expectation";
-import { ValidatorResult } from "./ValidatorResult";
+import Expectation from "./Expectation.js";
+import ExpectationsJS, { ValidatorFunction } from "./ExpectationsJS.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
+
 
 enum LogicOperator {
 	AND = "AND",

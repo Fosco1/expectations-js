@@ -1,7 +1,8 @@
-import { isValid } from ".";
-import ExpectationsJS, { ValidatorDescriptor, ValidatorFunction } from "./ExpectationsJS";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import ExpectationsJS, { ValidatorDescriptor, ValidatorFunction } from "./ExpectationsJS.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
+import { isValid } from "./index.js";
+
 
 export default class Expectation implements Validatable {
 	key: string;

@@ -6,9 +6,12 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "test": "node lib/tests/test.js"
+    "test": "mocha 'test/**/*.js' --recursive"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.4",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
     "typescript": "^5.2.2"
   },
   "keywords": [
@@ -26,5 +29,6 @@
     "data validation",
     "data validation library",
     "data validation framework"
-  ]
+  ],
+  "type": "module"
 }
