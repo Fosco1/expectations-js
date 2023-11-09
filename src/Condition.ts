@@ -1,7 +1,7 @@
-import Expectation from "./Expectation.js";
-import ExpectationsJS, { ValidatorFunction } from "./ExpectationsJS.js";
-import { Validatable } from "./Validatable.js";
-import { ValidatorResult } from "./ValidatorResult.js";
+import Expectation from "./Expectation";
+import ExpectationsJS, { ValidatorFunction } from "./ExpectationsJS";
+import { Validatable } from "./Validatable";
+import { ValidatorResult } from "./ValidatorResult";
 
 
 enum LogicOperator {
