@@ -162,21 +162,15 @@ export default class Expectation implements Validatable {
 	}
 
 	toBeGreaterThan(value: number): Expectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeGreaterThan', (data: any, message: string = `Should be greater than ${value}`) => {
-			if (data <= value) {
-				return this.processFailure(message)
-			}
-		}));
-		return this;
+		return this.toBeNumberGreaterThan(value);
 	}
 
 	toBeLessThan(value: number): Expectation {
-		this.validatorDescriptors.push(new ValidatorDescriptor('toBeLessThan', (data: any, message: string = `Should be less than ${value}`) => {
-			if (data >= value) {
-				return this.processFailure(message)
-			}
-		}));
-		return this;
+		return this.toBeNumberLessThan(value);
+	}
+
+	toBeBetween(min: number, max: number): Expectation {
+		return this.toBeNumberBetween(min, max);
 	}
 
 	toBeArray(): Expectation {
@@ -206,7 +200,7 @@ export default class Expectation implements Validatable {
 				}
 			});
 			if (missingProperties.length > 0) {
-				return ExpectationsJS.processMessage(message, this.key) + " Missing properties: " + missingProperties.join(", ");
+				return this.processFailure(message)
 			}
 		}));
 		return this;
@@ -215,6 +209,15 @@ export default class Expectation implements Validatable {
 	toHaveProperty(property: string): Expectation {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveProperty', (data: any, message: string = "Does not have the required property") => {
 			if (!data.hasOwnProperty(property)) {
+				return this.processFailure(message)
+			}
+		}));
+		return this;
+	}
+
+	toHaveLength(length: number): Expectation {
+		this.validatorDescriptors.push(new ValidatorDescriptor('toHaveLength', (data: any, message: string = `Does not meet the required length (required: ${length})`) => {
+			if (data.length !== length) {
 				return this.processFailure(message)
 			}
 		}));
@@ -283,7 +286,7 @@ export default class Expectation implements Validatable {
 
 	toBeNumberBetween(min: number, max: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberBetween', (data: any, message: string = `Should be a number between ${min} and ${max}`) => {
-			if ((typeof data !== "number" || !isNaN(data) || data < min || data > max)) {
+			if ((typeof data !== "number" || isNaN(data) || data < min || data > max)) {
 				return this.processFailure(message)
 			}
 		}))
@@ -292,7 +295,7 @@ export default class Expectation implements Validatable {
 
 	toBeNumberGreaterThan(value: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberGreaterThan', (data: any, message: string = `Should be a number greater than ${value}`) => {
-			if ((typeof data !== "number" || !isNaN(data) || data <= value)) {
+			if ((typeof data !== "number" || isNaN(data) || data <= value)) {
 				return this.processFailure(message)
 			}
 		}))
@@ -301,7 +304,7 @@ export default class Expectation implements Validatable {
 
 	toBeNumberLessThan(value: number) {
 		this.validatorDescriptors.push(new ValidatorDescriptor('toBeNumberLessThan', (data: any, message: string = `Should be a number smaller than ${value}`) => {
-			if ((typeof data !== "number" || !isNaN(data) || data >= value)) {
+			if ((typeof data !== "number" || isNaN(data) || data >= value)) {
 				return this.processFailure(message)
 			}
 		}))
