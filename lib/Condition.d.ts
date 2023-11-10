@@ -1,7 +1,7 @@
-import Expectation from "./Expectation";
-import { ValidatorFunction } from "./ExpectationsJS";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import Expectation from "./Expectation.js";
+import { ValidatorFunction } from "./ExpectationsJS.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
 declare enum LogicOperator {
     AND = "AND",
     OR = "OR"

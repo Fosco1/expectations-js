@@ -1,6 +1,6 @@
-import { ValidatorDescriptor, ValidatorFunction } from "./ExpectationsJS";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import { ValidatorDescriptor, ValidatorFunction } from "./ExpectationsJS.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
 export default class Expectation implements Validatable {
     key: string;
     validatorDescriptors: Array<ValidatorDescriptor>;

@@ -1,1 +1,1 @@
-export type ValidatorResult = any;
+export declare type ValidatorResult = any;

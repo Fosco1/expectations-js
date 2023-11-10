@@ -1,7 +1,7 @@
-import Condition from "./Condition";
-import Expectation from "./Expectation";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import Condition from "./Condition.js";
+import Expectation from "./Expectation.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
 export default class ExpectationsJS {
     static defaultMissingMessage: string;
     static validate(expectations: Array<Validatable> | Validatable, data: any): any;
@@ -22,4 +22,4 @@ export declare class ValidatorDescriptor {
     function: ValidatorFunction;
     constructor(name: string, func: ValidatorFunction);
 }
-export type ValidatorFunction = (data: any, message?: string) => string | undefined | void;
+export declare type ValidatorFunction = (data: any, message?: string) => string | undefined | void;
