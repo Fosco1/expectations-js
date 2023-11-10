@@ -1,5 +1,6 @@
-import ExpectationJS from '../ExpectationsJS';
+
 import { assert } from 'chai';
+import { expect, validate, isValid } from '../index.js';
 
 describe('expect', () => {
     describe('expect().not', () => {
@@ -8,10 +9,10 @@ describe('expect', () => {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBe('test1')
+                expect('test').not.toBe('test1')
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toMatch', () => {
@@ -21,10 +22,10 @@ describe('expect', () => {
             };
             const regex = /test/;
             const expectations = [
-                ExpectationJS.expect('test').toMatch(regex)
+                expect('test').toMatch(regex)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value does not match the regex', () => {
             const data = {
@@ -32,10 +33,10 @@ describe('expect', () => {
             };
             const regex = /test1/;
             const expectations = [
-                ExpectationJS.expect('test').not.toMatch(regex)
+                expect('test').not.toMatch(regex)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeString', () => {
@@ -44,20 +45,20 @@ describe('expect', () => {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeString()
+                expect('test').toBeString()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not a string', () => {
             const data = {
                 test: 1
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeString()
+                expect('test').not.toBeString()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeNumber', () => {
@@ -66,30 +67,30 @@ describe('expect', () => {
                 test: 1
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeNumber()
+                expect('test').toBeNumber()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not a number', () => {
             const data = {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeNumber()
+                expect('test').not.toBeNumber()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is numeric', () => {
             const data = {
                 test: '1'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeNumber()
+                expect('test').not.toBeNumber()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     })
     describe('expect().toBeBoolean', () => {
@@ -98,20 +99,20 @@ describe('expect', () => {
                 test: true
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeBoolean()
+                expect('test').toBeBoolean()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not a boolean', () => {
             const data = {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeBoolean()
+                expect('test').not.toBeBoolean()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is truthy or falsy', () => {
             const data = {
@@ -119,11 +120,11 @@ describe('expect', () => {
                 test2: 0
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeBoolean(),
-                ExpectationJS.expect('test2').not.toBeBoolean()
+                expect('test').not.toBeBoolean(),
+                expect('test2').not.toBeBoolean()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeObject', () => {
@@ -132,20 +133,20 @@ describe('expect', () => {
                 test: {}
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeObject()
+                expect('test').toBeObject()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not an object', () => {
             const data = {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeObject()
+                expect('test').not.toBeObject()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeArray', () => {
@@ -154,20 +155,20 @@ describe('expect', () => {
                 test: []
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeArray()
+                expect('test').toBeArray()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not an array', () => {
             const data = {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeArray()
+                expect('test').not.toBeArray()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeEmpty', () => {
@@ -176,20 +177,20 @@ describe('expect', () => {
                 test: []
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeEmpty(),
+                expect('test').toBeEmpty(),
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the array is not empty', () => {
             const data = {
                 test: [1]
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeEmpty(),
+                expect('test').not.toBeEmpty(),
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBe', () => {
@@ -198,20 +199,20 @@ describe('expect', () => {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').toBe('test')
+                expect('test').toBe('test')
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not equal to the expectation', () => {
             const data = {
                 test: 'test'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBe('test1')
+                expect('test').not.toBe('test1')
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeGreaterThan', () => {
@@ -220,30 +221,30 @@ describe('expect', () => {
                 test: 2
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeGreaterThan(1)
+                expect('test').toBeGreaterThan(1)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not greater than the expectation', () => {
             const data = {
                 test: 1
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeGreaterThan(2)
+                expect('test').not.toBeGreaterThan(2)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is numeric', () => {
             const data = {
                 test: '1'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeGreaterThan(2)
+                expect('test').not.toBeGreaterThan(2)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeLessThan', () => {
@@ -253,30 +254,30 @@ describe('expect', () => {
                 test: 1
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeLessThan(2)
+                expect('test').toBeLessThan(2)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not less than the expectation', () => {
             const data = {
                 test: 2
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeLessThan(1)
+                expect('test').not.toBeLessThan(1)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is numeric', () => {
             const data = {
                 test: '1'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeLessThan(2)
+                expect('test').not.toBeLessThan(2)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeBetween', () => {
@@ -285,30 +286,30 @@ describe('expect', () => {
                 test: 2
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeBetween(1, 3)
+                expect('test').toBeBetween(1, 3)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not between the expectations', () => {
             const data = {
                 test: 4
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeBetween(1, 3)
+                expect('test').not.toBeBetween(1, 3)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is numeric', () => {
             const data = {
                 test: '2'
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeBetween(1, 3)
+                expect('test').not.toBeBetween(1, 3)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     }),
     describe('expect().toBeNumeric', () => {
@@ -318,11 +319,11 @@ describe('expect', () => {
                 test1: 2
             };
             const expectations = [
-                ExpectationJS.expect('test').toBeNumeric(),
-                ExpectationJS.expect('test1').toBeNumeric()
+                expect('test').toBeNumeric(),
+                expect('test1').toBeNumeric()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value is not numeric', () => {
             const data = {
@@ -330,11 +331,11 @@ describe('expect', () => {
                 test1: false
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toBeNumeric(),
-                ExpectationJS.expect('test1').not.toBeNumeric()
+                expect('test').not.toBeNumeric(),
+                expect('test1').not.toBeNumeric()
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
     describe('expect().toHaveProperties', () => {
@@ -345,10 +346,10 @@ describe('expect', () => {
                 }
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveProperties(['test1'])
+                expect('test').toHaveProperties(['test1'])
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the object does not have the properties', () => {
             const data = {
@@ -357,10 +358,10 @@ describe('expect', () => {
                 }
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveProperties(['test2'])
+                expect('test').not.toHaveProperties(['test2'])
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
     describe('expect().toHaveProperty', () => {
@@ -371,10 +372,10 @@ describe('expect', () => {
                 }
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveProperty('test1')
+                expect('test').toHaveProperty('test1')
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the object does not have the property', () => {
             const data = {
@@ -383,10 +384,10 @@ describe('expect', () => {
                 }
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveProperty('test2')
+                expect('test').not.toHaveProperty('test2')
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
     describe('expect().toHaveLength', () => {
@@ -396,11 +397,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveLength(4),
-                ExpectationJS.expect('test1').toHaveLength(4)
+                expect('test').toHaveLength(4),
+                expect('test1').toHaveLength(4)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value does not have the required length', () => {
             const data = {
@@ -408,21 +409,21 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveLength(5),
-                ExpectationJS.expect('test1').not.toHaveLength(5)
+                expect('test').not.toHaveLength(5),
+                expect('test1').not.toHaveLength(5)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not crash when the value is not a string or array', () => {
             const data = {
                 test: undefined
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveLength(1)
+                expect('test').toHaveLength(1)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isFalse(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isFalse(isValid(result));
         });
     });
     describe('expect().toHaveMinimumLength', () => {
@@ -432,11 +433,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveMinimumLength(4),
-                ExpectationJS.expect('test1').toHaveMinimumLength(4)
+                expect('test').toHaveMinimumLength(4),
+                expect('test1').toHaveMinimumLength(4)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value does not have the minimum length', () => {
             const data = {
@@ -444,11 +445,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveMinimumLength(5),
-                ExpectationJS.expect('test1').not.toHaveMinimumLength(5)
+                expect('test').not.toHaveMinimumLength(5),
+                expect('test1').not.toHaveMinimumLength(5)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
     describe('expect().toHaveMaximumLength', () => {
@@ -458,11 +459,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveMaximumLength(4),
-                ExpectationJS.expect('test1').toHaveMaximumLength(4)
+                expect('test').toHaveMaximumLength(4),
+                expect('test1').toHaveMaximumLength(4)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value does not have the maximum length', () => {
             const data = {
@@ -470,11 +471,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveMaximumLength(3),
-                ExpectationJS.expect('test1').not.toHaveMaximumLength(3)
+                expect('test').not.toHaveMaximumLength(3),
+                expect('test1').not.toHaveMaximumLength(3)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
     describe('expect().toHaveLengthBetween', () => {
@@ -484,11 +485,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').toHaveLengthBetween(3, 5),
-                ExpectationJS.expect('test1').toHaveLengthBetween(3, 5)
+                expect('test').toHaveLengthBetween(3, 5),
+                expect('test1').toHaveLengthBetween(3, 5)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
         it('should not validate if the value does not have the length between the expectations', () => {
             const data = {
@@ -496,11 +497,11 @@ describe('expect', () => {
                 test1: [1, 2, 3, 4]
             };
             const expectations = [
-                ExpectationJS.expect('test').not.toHaveLengthBetween(4, 5),
-                ExpectationJS.expect('test1').not.toHaveLengthBetween(4, 5)
+                expect('test').not.toHaveLengthBetween(4, 5),
+                expect('test1').not.toHaveLengthBetween(4, 5)
             ];
-            const result = ExpectationJS.validate(expectations, data);
-            assert.isTrue(ExpectationJS.isValid(result));
+            const result = validate(expectations, data);
+            assert.isTrue(isValid(result));
         });
     });
 

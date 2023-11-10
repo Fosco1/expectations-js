@@ -1,7 +1,7 @@
-import Condition from "./Condition";
-import Expectation from "./Expectation";
-import { Validatable } from "./Validatable";
-import { ValidatorResult } from "./ValidatorResult";
+import Condition from "./Condition.js";
+import Expectation from "./Expectation.js";
+import { Validatable } from "./Validatable.js";
+import { ValidatorResult } from "./ValidatorResult.js";
 
 export default class ExpectationsJS {
 	static defaultMissingMessage: string = "Missing %key.capitalize%.";
